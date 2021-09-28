@@ -1,6 +1,6 @@
 // Use partname to control which object is being rendered:
 //
-// _partname_values display connector_rack
+// _partname_values connector_rack
 partname = "display";
 
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
@@ -14,7 +14,7 @@ lower_rack_h = 54;
 metal_piece_r = 2.5;
 
 wall_w = 3;
-piece_wd = [20,wall_w];
+piece_wd = [20,5];
 
 module clasp ()
 {
@@ -65,7 +65,11 @@ module connector_rack ()
 {
 
   translate([-3*wall_w,0,0])
-    cube([max(inter_rack_h_range)+54+2*wall_w+(max(inter_rack_h_range)-min(inter_rack_h_range)),piece_wd[1],piece_wd[0]]);
+    cube([
+      max(inter_rack_h_range)+54+2*wall_w+(max(inter_rack_h_range)-min(inter_rack_h_range)),
+      piece_wd[1],
+      piece_wd[0]
+    ]);
   for (off = [0,54])
     translate([off,0,0])
      clasp();
