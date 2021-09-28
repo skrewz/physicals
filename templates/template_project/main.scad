@@ -1,6 +1,6 @@
 // Use partname to control which object is being rendered:
 //
-// _partname_values display unit_circle
+// _partname_values unit_circle
 partname = "display";
 
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
