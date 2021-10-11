@@ -17,11 +17,13 @@ outer_arm_finger_area_inset = 20;
 outer_arm_finger_area_width = 10;
 
 
-// how much off plane level should the hinge lift the arm?
+// how much off plane level should the hinge lift the arms?
 hinge_lift = 4;
 hinge_length = 10;
 hinge_base_length = 30;
 hinge_width = 50;
+// how far apart two hinges would be:
+hinge_interval = 24;
 hinge_arm_spacing = 3*arm_thickness;
 
 m3_bolt_cutout_r = 1.7;
@@ -112,17 +114,23 @@ module hinge()
   translate([-(hinge_base_length-hinge_length)/2,0,0])
     cube([hinge_base_length,hinge_width,arm_thickness]);
 
+  // the left-or-right distance from an arm's centerline:
+  yoff_dist = (hinge_arm_spacing+2*0.5*arm_thickness)/2;
   // the hinge rotation points
   difference ()
   {
     union ()
     {
-      for (yoff = [
-        hinge_width/2-(hinge_arm_spacing+2*0.5*arm_thickness)/2,
-        hinge_width/2+(hinge_arm_spacing+2*0.5*arm_thickness)/2
+      for (hinge_pos = [
+        hinge_width/2-hinge_interval/2,
+        hinge_width/2+hinge_interval/2
       ])
-        translate([0,yoff-0.5*arm_thickness,0])
-          cube([hinge_length,arm_thickness,hinge_lift+arm_height]);
+        for (yoff = [
+          hinge_pos-yoff_dist,
+          hinge_pos+yoff_dist
+        ])
+          translate([0,yoff-0.5*arm_thickness,0])
+            cube([hinge_length,arm_thickness,hinge_lift+arm_height]);
     }
     translate([hinge_length/2,0,hinge_lift+arm_height/2])
       rotate([-90,0,0])
@@ -137,11 +145,17 @@ module hinge()
 //   like it will be, in the put-together "display" situation.)
 // * The special value "display" for partname is the product picture for all
 //   parts put together.
-if ("display" == partname) {
+module assembled_arm ()
+{
   translate([0,0,hinge_lift])
     outer_arm();
   translate([outer_arm_length-arm_hinge_overlap,arm_thickness,hinge_lift])
     inner_arm();
+}
+if ("display" == partname) {
+  for (yoff = [-hinge_interval/2,hinge_interval/2])
+    translate([0,yoff,0])
+      assembled_arm();
   translate([
     outer_arm_length-arm_hinge_overlap/2-(hinge_length/2),
     -(hinge_width/2-0.5*arm_thickness),
