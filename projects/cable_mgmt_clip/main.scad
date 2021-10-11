@@ -8,7 +8,7 @@ ledge_width = 14;
 // how far out to stretch the rounded part:
 bend_length = 20;
 // how high above the base does the ledge go?
-ledge_height = 7;
+ledge_height = 5;
 // how much wall thickness should the ledged part have?
 ledge_part_thickness = 2;
 // Cable diameter around 4mm
@@ -36,7 +36,7 @@ module clip()
       cube([bend_length,3*bend_length,3*clip_width]);
     // cut out cable channel:
     translate([-0.01,-0.01,-clip_width])
-      cube([3*cable_r,2*cable_r,3*clip_width]);
+      cube([2*cable_r,2*cable_r,3*clip_width]);
   }
   // add ledge:
   translate([-ledge_width,ledge_height,0])
