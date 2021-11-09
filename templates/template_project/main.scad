@@ -3,11 +3,13 @@
 // _partname_values unit_circle
 partname = "display";
 
+include <libs/compass.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
 $fa = 12;
 // $fs is the minimum size of a fragment. If high, causes
 // fewer-than-$fa-would-indicate surfaces. Minimum is 0.01.
 $fs = 2;
+
 
 module unit_circle()
 {
