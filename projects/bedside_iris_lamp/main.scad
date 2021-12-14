@@ -15,9 +15,10 @@
 // Use partname to control which object is being rendered:
 //
 // _partname_values lamp_case base iris_back_plate iris_front_plate iris_control_plate
-partname = "lamp_case";
+partname = "display";
 
 include <libs/compass.scad>
+include <libs/esp8266.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
 $fa = 2;
 // $fs is the minimum size of a fragment. If high, causes
@@ -29,14 +30,15 @@ wall_thickness = 3;
 lip_size = 2;
 lamp_case_height = 10;
 wire_channel_radius = 3;
+usb_channel_radius = 4;
 
-bed_column_hd = [25+1,50+1.5];
+bed_column_hd = [25+1,50+2.5];
 bed_mount_droop_pipe_radius = 5;
 
 
 // Less-likely adjusted:
 lamp_case_base_radius = 23;
-lamp_case_flange_radius = 36-wall_thickness;
+lamp_case_flange_radius = 37.5-wall_thickness;
 lamp_case_bolt_supports_radius = 6;
 lamp_case_bolt_supports_distance_from_center = lamp_case_flange_radius+9.5;
 
@@ -51,11 +53,11 @@ m3_nut_clear_radius = 3.4; // When creating $fn=6 cutouts for m3 nuts
 
 
 // estimate, for ESP8266:
-mcu_cutout_wdh = [80,50,30];
+mcu_cutout_wdh = [60,50,30];
 
 base_front_extension_depth = 15;
 base_box_wdh = [
-  100, // arbitrary
+  mcu_cutout_wdh[0]+2*wall_thickness, // arbitrary
   max(base_front_extension_depth+bed_column_hd[1],mcu_cutout_wdh[1]+2*wall_thickness), // large enough for bed_column and mcu
   wall_thickness+mcu_cutout_wdh[2]+wall_thickness+bed_column_hd[0]+wall_thickness
 ];
@@ -67,12 +69,12 @@ base_ball_joint_position = [
   base_box_wdh[2]
 ];
 
-wire_escape_x = base_ball_joint_position[0]-10;
+wire_escape_x = base_box_wdh[0]-(5*base_box_wdh[0]/8);
 
 
 button_positions = [
   [
-    base_box_wdh[0]-(3*base_box_wdh[0]/8),
+    base_box_wdh[0]-(1*base_box_wdh[0]/8),
     (base_box_wdh[1]-mcu_cutout_wdh[1])/2,
     base_box_wdh[2],
   ],
@@ -82,12 +84,12 @@ button_positions = [
     base_box_wdh[2],
   ],
   [
-    base_box_wdh[0]-(1*base_box_wdh[0]/8),
+    base_box_wdh[0]-(6*base_box_wdh[0]/8),
     (base_box_wdh[1]-mcu_cutout_wdh[1])/2,
     base_box_wdh[2],
   ],
   [
-    base_box_wdh[0]-(6*base_box_wdh[0]/8),
+    base_box_wdh[0]-(7*base_box_wdh[0]/8),
     (base_box_wdh[1]-mcu_cutout_wdh[1])/2,
     base_box_wdh[2],
   ],
@@ -153,7 +155,7 @@ module contact_positive_buttonbased ()
 
     translate([0,0,-(2+1-contact_clearance)])
       color("red")
-        cylinder(r=1.5,h=3,$fn=10);
+      cylinder(r=1.5,h=3,$fn=10);
   }
 } // }}}
 module neck_joint ()
@@ -168,7 +170,7 @@ module neck_joint_final_male ()
   {
     translate([0,0,2])
       mirror([0,0,1])
-        neck_joint();
+      neck_joint();
     mirror([0,0,1])
       cylinder(r=20,h=20);
   }
@@ -196,6 +198,18 @@ module base_pos ()
   cube(base_box_wdh);
   translate(base_ball_joint_position)
     neck_joint_final_male();
+
+  translate([
+      base_box_wdh[0]-mcu_cutout_wdh[0],
+      base_box_wdh[1]-2*wall_thickness,
+      wall_thickness+(mcu_cutout_wdh[2]-esp8266_wdh[0])/2,
+  ]) {
+    compass();
+    rotate([-90,-90,0])
+    {
+      esp8266_v2();
+    }
+  }
   // TODO: four silent buttons:
   // * on/off
   // * brightness up
@@ -206,59 +220,59 @@ module base_neg ()
 { // {{{
   // cutout for hooky part to attach to frame
   translate([
-    -0.01,
-    base_box_wdh[1]-bed_column_hd[1]+0.01,
-    base_box_wdh[2]-wall_thickness-bed_column_hd[0]
+      -0.01,
+      base_box_wdh[1]-bed_column_hd[1]+0.01,
+      base_box_wdh[2]-wall_thickness-bed_column_hd[0]
   ]) {
     cube([
-      base_box_wdh[0]+0.02,
-      bed_column_hd[1]-wall_thickness,
-      bed_column_hd[0]
+        base_box_wdh[0]+0.02,
+        bed_column_hd[1]-wall_thickness,
+        bed_column_hd[0]
     ]);
     // cut out lips:
     translate([0,2*wall_thickness,lip_size])
-    cube([
-      base_box_wdh[0]+0.02,
-      bed_column_hd[1]-wall_thickness,
-      bed_column_hd[0]-2*lip_size
-    ]);
+      cube([
+          base_box_wdh[0]+0.02,
+          bed_column_hd[1]-wall_thickness,
+          bed_column_hd[0]-2*lip_size
+      ]);
   }
 
   // cut out wire channel
   translate([
-    wire_escape_x,
-    base_ball_joint_position[1],
-    2*wall_thickness,
+      wire_escape_x,
+      base_ball_joint_position[1],
+      2*wall_thickness,
   ]){
     cylinder(r=wire_channel_radius,h=2*base_box_wdh[2]);
   }
 
   // cutout for MCU
   translate([
-    (base_box_wdh[0]-mcu_cutout_wdh[0])-wall_thickness,
-    wall_thickness,
-    wall_thickness
+      (base_box_wdh[0]-mcu_cutout_wdh[0])-wall_thickness,
+      wall_thickness,
+      wall_thickness
   ]) {
     cube([
-      mcu_cutout_wdh[0],
-      // ignoring actual mcu_cutout_wdh[1], to allow upwards connectivity:
-      base_box_wdh[1]-wall_thickness+0.01,
-      mcu_cutout_wdh[2],
+        mcu_cutout_wdh[0],
+        // ignoring actual mcu_cutout_wdh[1], to allow upwards connectivity:
+        base_box_wdh[1]-wall_thickness+0.01,
+        mcu_cutout_wdh[2],
     ]);
   }
   // cutout for MCU USB power entry
   translate([
-    -0.01,
-    wall_thickness+wire_channel_radius,
-    wall_thickness+mcu_cutout_wdh[2]/2,
+      -0.01,
+      wall_thickness+wire_channel_radius,
+      wall_thickness+mcu_cutout_wdh[2]/2,
   ]) {
     rotate([0,90,0])
-    linear_extrude(height=base_box_wdh[0]-mcu_cutout_wdh[0])
-    {
-      hull()
-        for (yoff = [base_box_wdh[1]/2,base_box_wdh[1]-2*(wire_channel_radius+wall_thickness)])
+      linear_extrude(height=base_box_wdh[0]-mcu_cutout_wdh[0])
+      {
+        hull()
+        for (yoff = [0+usb_channel_radius+wall_thickness,base_box_wdh[1]-2*(usb_channel_radius+wall_thickness)])
           translate([0,yoff])
-            circle(r=wire_channel_radius);
+            circle(r=usb_channel_radius);
     }
   }
 
@@ -339,7 +353,7 @@ module lamp_case_pos ()
   }
   cylinder(
     r1=lamp_case_base_radius+wall_thickness,
-    r2=lamp_case_flange_radius+wall_thickness,
+    r2=lamp_case_flange_radius,
     h=lamp_case_height);
 
   translate([0,0,0])
@@ -427,7 +441,7 @@ if ("display" == partname)
     lamp_case();
 } else if ("base" == partname)
 {
-  rotate([90,0,0])
+  rotate([0,-90,0])
     base();
 } else if ("iris_back_plate" == partname)
 {
