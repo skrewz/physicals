@@ -74,6 +74,17 @@ module connector_rack ()
     translate([off,0,0])
      clasp();
 
+  // reinforcement circle around stress point:
+  translate([lower_rack_h+wall_w+1.2*metal_piece_r,wall_w,0])
+  {
+    difference()
+    {
+      cylinder(r=2.5*wall_w,h=piece_wd[0]);
+      translate([-3*wall_w,0,-0.01])
+        cube([6*wall_w,6*wall_w,piece_wd[0]+0.02]);
+    }
+  }
+
   translate([54+wall_w+1.2*metal_piece_r,piece_wd[1],0])
     cube([min(inter_rack_h_range)-2*(wall_w+1.2*metal_piece_r),3*wall_w,wall_w]);
 
