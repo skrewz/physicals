@@ -44,7 +44,7 @@ module lid()
   );
   difference()
   {
-    cylinder(r=lid_actual_outer_r,h=wall_w+wall_w+lid_overhang);
+    cylinder(r=lid_actual_outer_r,h=wall_w+lid_overhang);
     translate([0,0,-0.01])
       cylinder(r=max_roll_r+wall_w+lid_oversize_mm,h=lid_overhang+0.01);
   }
@@ -53,7 +53,8 @@ module clasp()
 {
   difference()
   {
-    cylinder(r=max_roll_r+wall_w+clasp_oversize_mm+wall_w,h=wall_w+roll_h);
+    // h = base-of-clasp + roll height + base-of-holder
+    cylinder(r=max_roll_r+wall_w+clasp_oversize_mm+wall_w,h=wall_w+roll_h+wall_w);
     translate([0,0,wall_w])
       cylinder(r=max_roll_r+wall_w+clasp_oversize_mm,h=3*wall_w+roll_h);
     // A window to get to the paper:
@@ -75,7 +76,7 @@ if ("display" == partname)
   clasp();
   translate([0,0,wall_w])
     holder();
-  translate([0,0,roll_h+wall_w])
+  translate([0,0,roll_h+wall_w+wall_w])
   {
   %
     lid();
