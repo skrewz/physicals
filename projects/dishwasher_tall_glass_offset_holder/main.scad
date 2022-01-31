@@ -1,15 +1,15 @@
 // Use partname to control which object is being rendered:
 //
 // _partname_values holder
-partname = "holder";
+partname = "display";
 include <libs/compass.scad>
 
 
 // from the center of the clasps (with a middle where the vertical support
 // connects), how deep is the horizontal support:
-horizontal_offset_segments = [20,30];
+horizontal_offset_segments = [20,50];
 vertical_support_height = 72;
-wall_thickness = 7;
+wall_thickness = 9;
 piece_width = 15;
 
 clasp_r = 2.5;
@@ -34,15 +34,22 @@ module clasp_cutout(r=clasp_r)
 
 module holder_pos()
 {
+  // leading towards rack clasp:
   translate([0,0,vertical_support_height])
-  {
-    // leading towards rack clasp:
     mirror([1,0,0])
-      cube([clasp_r+horizontal_offset_segments[0],piece_width,wall_thickness]);
+      cube([clasp_r+horizontal_offset_segments[0]+clasp_r,piece_width,wall_thickness]);
 
-    // leading towards glass stem clasp:
+  // leading towards glass stem clasp:
+  translate([0,0,vertical_support_height])
     cube([glass_stem_r+horizontal_offset_segments[1],piece_width,wall_thickness]);
-  }
+
+  // leading between vertical post and glass stem clasp:
+  support_offset = 0.9*horizontal_offset_segments[1];
+  support_angle = atan(horizontal_offset_segments[1]/vertical_support_height);
+  translate([support_offset,0,vertical_support_height+wall_thickness])
+    rotate([0,90+support_angle,0])
+    cube([support_offset/sin(support_angle)+wall_thickness*cos(45),piece_width,wall_thickness]);
+
   // vertical post
   translate([-wall_thickness/2,0,0])
     cube([wall_thickness,piece_width,vertical_support_height]);
@@ -64,6 +71,7 @@ module holder_neg()
   translate([0,0,vertical_support_height+wall_thickness/2])
     mirror([1,0,0])
       translate([horizontal_offset_segments[0],0,0])
+        rotate([0,90,0])
         clasp_cutout();
 
   // bottom of vertical post, also rack clasp:
