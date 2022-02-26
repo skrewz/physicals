@@ -82,8 +82,8 @@ module holder()
       }
     }
     // cutout for the clasp that this mounts around:
-    translate([gap_for_clasp_wh[0]+(clasp_width/2-gap_for_clasp_wh[0]/2),0,0])
-      cube([gap_for_clasp_wh[0],gap_for_clasp_wh[1],clasp_height]);
+    translate([gap_for_clasp_wh[0]+(clasp_width/2-gap_for_clasp_wh[0]/2),0,-max(2*base_r,clasp_height)])
+      cube([gap_for_clasp_wh[0],gap_for_clasp_wh[1],3*max(2*base_r,clasp_height)]);
   }
 }
 
