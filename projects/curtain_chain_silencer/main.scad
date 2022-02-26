@@ -15,11 +15,11 @@ gap_for_clasp_wh = [11,16];
 
 // How tall and how large radius is used to hold the chain?
 clasp_height_off_wall = 40;
-clasp_rounding_r = 10;
+clasp_rounding_r = 15;
 
 // For the rounded part, how wide should the part be? (This largely depends on
 // the size of the balls on chain)?
-clasp_width = 20;
+clasp_width = 30;
 
 // How tall (along the wall) should the piece be?
 clasp_height = 50;
