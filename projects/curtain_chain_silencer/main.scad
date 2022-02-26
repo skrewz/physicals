@@ -36,7 +36,6 @@ module holder()
   {
     union()
     {
-      /* cube([clasp_width+2*gap_for_clasp_wh[0],wall_w,clasp_height]); */
       translate([base_r,0,clasp_height/2])
         rotate([-90,0,0])
         cylinder(r=base_r,h=wall_w);
@@ -46,7 +45,6 @@ module holder()
         {
           union()
           {
-            /* cube([clasp_width,clasp_height_off_wall-clasp_rounding_r,2*clasp_rounding_r]); */
             translate([clasp_rounding_r,0,clasp_rounding_r])
               rotate([-90,0,0])
                 cylinder(r=clasp_rounding_r,h=clasp_height_off_wall-clasp_rounding_r,$fn=40);
