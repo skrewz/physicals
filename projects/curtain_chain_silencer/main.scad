@@ -38,7 +38,7 @@ module holder()
     {
       translate([base_r,0,clasp_height/2])
         rotate([-90,0,0])
-        cylinder(r=base_r,h=wall_w);
+          cylinder(r=base_r,h=wall_w);
       translate([gap_for_clasp_wh[0],0,clasp_height/2-2*clasp_rounding_r/2])
       {
         difference()
@@ -53,7 +53,7 @@ module holder()
               rotate([0,90,0])
               {
                 translate([0,0,clasp_rounding_r])
-                sphere(r=clasp_rounding_r,$fn=40);
+                  sphere(r=clasp_rounding_r,$fn=40);
               }
             }
           }
@@ -75,9 +75,9 @@ module holder()
           translate([clasp_width/2,wall_w,clasp_rounding_r])
           {
             for (zoff = [-groove_off_center_r,groove_off_center_r])
-            translate([0,0,zoff])
-            rotate([-90,0,0])
-            cylinder(r=clasp_width/2-wall_w,h=clasp_height_off_wall-clasp_rounding_r-wall_w,$fn=40);
+              translate([0,0,zoff])
+                rotate([-90,0,0])
+                  cylinder(r=clasp_width/2-wall_w,h=clasp_height_off_wall-clasp_rounding_r-wall_w,$fn=40);
           }
         }
       }
