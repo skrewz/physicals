@@ -45,15 +45,14 @@ module holder()
         {
           union()
           {
-            translate([clasp_rounding_r,0,clasp_rounding_r])
+            translate([clasp_width/2,0,clasp_rounding_r])
               rotate([-90,0,0])
                 cylinder(r=clasp_rounding_r,h=clasp_height_off_wall-clasp_rounding_r,$fn=40);
-            translate([0,clasp_height_off_wall-clasp_rounding_r,clasp_rounding_r])
+            translate([clasp_width/2,clasp_height_off_wall-clasp_rounding_r,clasp_rounding_r])
             {
               rotate([0,90,0])
               {
-                translate([0,0,clasp_rounding_r])
-                  sphere(r=clasp_rounding_r,$fn=40);
+                sphere(r=clasp_rounding_r,$fn=40);
               }
             }
           }
