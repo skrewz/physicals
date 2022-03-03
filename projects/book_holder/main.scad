@@ -175,15 +175,21 @@ module holder ()
     {
       planes();
 
-      // Place handle
+      // Place handles
       rotate([-lean_angle,0,0])
       {
-        rotate([0,0,opening_angle/2])
+        for(m = [0,1])
         {
-          translate([0,-0.4*book_side_support_wh[0],0.85*book_side_support_wh[1]])
-          rotate([0,90,0])
-          rotate([0,handle_downward_angle,0])
-          handle();
+          mirror([m,0,0])
+          {
+            rotate([0,0,opening_angle/2])
+            {
+              translate([0,-0.4*book_side_support_wh[0],0.85*book_side_support_wh[1]])
+              rotate([0,90,0])
+              rotate([0,handle_downward_angle,0])
+              handle();
+            }
+          }
         }
       }
 
