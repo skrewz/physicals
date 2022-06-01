@@ -142,10 +142,10 @@ module bare_case ()
         //cylinder(r=corner_r,h=1);
         sphere(r=corner_r);
       }
-      translate([-500,-500,-1000])
-        cube([1000,1000,1000]);
+      translate([-100,-100,-100])
+        cube([400,300,100]);
       translate([0,0,wall_w+board_indent_depth])
-        cube([display_wdh[0],display_wdh[1],1000]);
+        cube([display_wdh[0],display_wdh[1],100]);
     }
     // Grab corners of display:
     translate([0,0,case_height-grab_thickness])
@@ -304,8 +304,8 @@ module left_side_of_case ()
   intersection()
   {
     whole_case();
-    translate([0,0,-500])
-      cube([cutout_x_offset+cutout_width,1000,1000]);
+    translate([0,0,-100])
+      cube([cutout_x_offset+cutout_width,200,200]);
   }
 }
 
@@ -317,8 +317,8 @@ module right_side_of_case()
     intersection()
     {
       whole_case();
-      translate([cutout_x_offset+cutout_width,0,-500])
-        cube([1000,1000,1000]);
+      translate([cutout_x_offset+cutout_width,0,-100])
+        cube([200,200,200]);
     }
   }
 }
