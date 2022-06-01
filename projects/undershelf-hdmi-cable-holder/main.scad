@@ -92,7 +92,7 @@ if ("display" == partname)
   shelf();
 } else if ("shelf" == partname)
 {
-  rotate([0,0,0])
+  rotate([90,0,0])
   {
     shelf();
   }
