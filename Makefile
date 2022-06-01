@@ -15,10 +15,10 @@ render:
 	mkdir -p render
 
 render/display.png: render $(mainfile)
-	openscad -D'partname="display"' --viewall --imgsize 1920,1080 --preview -o $@ main.scad
+	openscad -D'partname="display"' --viewall --imgsize 1920,1080 --render -o $@ main.scad
 
 render/%.png: render $(mainfile)
-	openscad $(shell echo "$@" | sed -re "s/.*_part_([^-.]+).*/ -D'partname=\"\1\"'/") --viewall --imgsize 1920,1080 --preview -o $@ main.scad
+	openscad $(shell echo "$@" | sed -re "s/.*_part_([^-.]+).*/ -D'partname=\"\1\"'/") --viewall --imgsize 1920,1080 --render -o $@ main.scad
 
 
 
