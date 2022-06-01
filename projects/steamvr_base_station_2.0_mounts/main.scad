@@ -1,7 +1,7 @@
 // Use partname to control which object is being rendered:
 //
 // _partname_values wall_mounted_clasp wall_plate mount_for_3m_adhesive_cover shelf_mounted_clasp
-partname = "shelf_mounted_clasp";
+partname = "wall_mounted_clasp";
 
 // generic thickness of walls, as used here and there:
 wall_thickness = 2;
@@ -126,8 +126,8 @@ module camera_screw_thread_mount(rotation,screwmount_height,screw_clearance_heig
   intersection()
   {
     // cut to only stuff y-positive of the the xz plane:
-    translate([-1000/2,0,-1000/2])
-      cube([1000,1000,1000]);
+    translate([-200/2,0,-200/2])
+      cube([200,200,200]);
     rotate(rotation)
     {
       difference()
