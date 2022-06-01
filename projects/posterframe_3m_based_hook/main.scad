@@ -1,7 +1,7 @@
 // Use partname to control which object is being rendered:
 //
 // _partname_values frame_hook
-partname = "display";
+partname = "frame_hook";
 
 include <libs/compass.scad>
 include <libs/3m_hooks.scad>
@@ -69,5 +69,6 @@ if ("display" == partname)
   frame_hook();
 } else if ("frame_hook" == partname)
 {
-  frame_hook();
+  rotate([90,0,0])
+    frame_hook();
 }
