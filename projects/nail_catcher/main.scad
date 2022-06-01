@@ -67,7 +67,6 @@ module catcher()
       {
         // main extraction from the shield:
         translate([0,0,-shield_h_extension])
-        #
           cube([shield_w,shield_l,shield_h+shield_h_extension]);
         // through from hold to shield:
         translate([0,0,0])
