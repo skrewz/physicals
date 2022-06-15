@@ -2,4 +2,4 @@
 
 This sits atop a vitamin container. Set it to the current weekday to avoid taking the pills again that day.
 
-![Generated disploy preview](render/display.png Generated display preview)
+![Generated display preview](render/display.png "Generated display preview")
