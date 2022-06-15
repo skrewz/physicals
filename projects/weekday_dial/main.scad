@@ -15,7 +15,7 @@ labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 wall_w=1;
 lid_w=2;
 dial_disc_height=3;
-dial_lettering_height=2;
+dial_lettering_height=0.4;
 container_diameter=70;
 container_lid_height=15;
 peg_diameter=10;
@@ -29,21 +29,21 @@ module clasp()
   r = peg_diameter/2-0.5;
   translate([0,0,container_lid_height])
   {
-    // cone-shaped to make disc not rotate in place:
-    cylinder(r1=peg_diameter/2,r2=r,h=dial_disc_height+dial_lettering_height,$fn=30);
+    // making this a polygon to explicitly sit the disc() into place:
+    cylinder(r1=peg_diameter/2,r2=r,h=dial_disc_height+dial_lettering_height,$fn=len(labels));
     // Place an arrow on top:
     translate([0,0,dial_disc_height+dial_lettering_height])
     {
       linear_extrude(height=dial_lettering_height)
       {
         polygon([
-          [0,-r],
-          [r/2,-r+r/2],
-          [r/6,-r+r/2],
-          [r/6,r],
-          [-r/6,r],
-          [-r/6,-r+r/2],
-          [-r/2,-r+r/2],
+          [r,0],
+          [r-r/2,r/2],
+          [r-r/2,r/6],
+          [-r/2,r/6],
+          [-r/2,-r/6],
+          [r-r/2,-r/6],
+          [r-r/2,-r/2],
         ]);
       }
     }
@@ -69,20 +69,20 @@ module dial()
         for (i = [0 : 1 : len(labels)]){
           rotate([0,0,i*360/len(labels)]) {
             translate([
-                -(dial_diameter/2-font_height/4),
-                -font_height/2,
+                (dial_diameter/2-font_height/4),
+                font_height/2,
                 0])
             {
-              linear_extrude(height=dial_lettering_height)
-                text(labels[i],size=font_height,font=month_font, halign="left",$fn=10);
+              rotate([0,0,180])
+                linear_extrude(height=dial_lettering_height)
+                  text(labels[i],size=font_height,font=month_font, halign="left",$fn=10);
             }
           }
         }
       }
     }
-    // On a perfect printer, 0.25 radius difference oughtn't be necessary, but
-    // this should make it sit a bit lower on actual hardware:
-    cylinder(r=peg_diameter/2+0.25,h=10,$fn=40);
+    // 0.1 extra cutout seems to be sufficient to lie it flat:
+    cylinder(r=peg_diameter/2+0.1,h=10,$fn=len(labels));
   }
 }
 
