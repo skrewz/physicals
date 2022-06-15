@@ -17,9 +17,9 @@ clamp_hd = [30,40];
 bump_height = 2;
 bump_radius = 10;
 // the depth of the tee is the air gap under its upper bar:
-T_wd = [90,3];
+H_wd = [110,3];
 
-// along column_wd[0], how far from 0 is the middle between two curtains? (i.e. where to center the T):
+// along column_wd[0], how far from 0 is the middle between two curtains? (i.e. where to center the H):
 centerline_offset = 20;
 
 
@@ -43,13 +43,15 @@ module clamp ()
     }
   }
   
-  // the T:
+  // the H:
   
-  translate([centerline_offset-wall_width/2,-T_wd[1],0])
+  translate([centerline_offset-wall_width/2-H_wd[0]/2,0,0])
+    cube([H_wd[0],wall_width,clamp_hd[0]]);
+  translate([centerline_offset-wall_width/2,-H_wd[1],0])
   {
-    cube([wall_width,T_wd[1],clamp_hd[0]]);
-    translate([-T_wd[0]/2,-wall_width,0])
-      cube([T_wd[0],wall_width,clamp_hd[0]]);
+    cube([2*wall_width,H_wd[1],clamp_hd[0]]);
+    translate([-H_wd[0]/2,-wall_width,0])
+      cube([H_wd[0],wall_width,clamp_hd[0]]);
   }
 }
 
