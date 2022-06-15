@@ -1,3 +1,3 @@
 # unmodfied template README
 
-![Generated disploy preview](render/display.png Generated display preview)
+![Generated disploy preview](render/display.png "Generated display preview")
