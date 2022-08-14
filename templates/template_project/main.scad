@@ -8,7 +8,7 @@ include <libs/compass.scad>
 $fa = 12;
 // $fs is the minimum size of a fragment. If high, causes
 // fewer-than-$fa-would-indicate surfaces. Minimum is 0.01.
-$fs = 2;
+$fs = $preview ? 2 : 0.5;
 
 
 module unit_circle()
