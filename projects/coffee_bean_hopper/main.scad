@@ -39,7 +39,7 @@ hopper_clasp_frill_angle = 55;
 hopper_clasp_frill_angular_offset = 90;
 
 hopper_clasp_hole_offset = 29;
-hopper_clasp_hole_r = 2;
+hopper_clasp_hole_r = 1.9;
 hopper_clasp_hole_d = 8;
 hopper_clasp_hole_angular_offset = 47;
 
