@@ -22,13 +22,13 @@ wall_w = 2;
 hopper_total_h = 80;
 hopper_wall_w = wall_w;
 
-hopper_od = 80;
-
 hopper_clasp_od = 68.5;
 hopper_clasp_h = 17;
 hopper_clasp_indent_cut_d = 65.0;
 
 hopper_throughhole_d = 29.5;
+
+hopper_od = hopper_clasp_od;
 
 // FIXME: a guess:
 hopper_clasp_indent_cut_angle = 57;
