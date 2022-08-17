@@ -61,7 +61,7 @@ module hopper_neg()
   // cylindrical cutout for hopper:
   translate([0,0,hopper_od/2])
     translate([0,0,-0.01])
-      cylinder(r=hopper_od/2-hopper_wall_w, h=hopper_total_h+0.03);
+      cylinder(r=hopper_od/2-hopper_wall_w, h=hopper_total_h-hopper_clasp_od/2+0.03);
 
   // indent cutouts for base:
   for(ang = [0,180])
@@ -106,7 +106,7 @@ module hopper_pos()
   // cylindrical part of hopper
   translate([0,0,hopper_od/2])
   {
-    cylinder(r=hopper_od/2, h=hopper_total_h);
+    cylinder(r=hopper_od/2, h=hopper_total_h-hopper_clasp_od/2);
   }
 
   // hopper attachment point:
