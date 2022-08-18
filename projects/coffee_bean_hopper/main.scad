@@ -1,6 +1,6 @@
 // Use partname to control which object is being rendered:
 //
-// _partname_values hopper
+// _partname_values hopper lid
 partname = "display";
 
 include <libs/compass.scad>
@@ -43,12 +43,42 @@ hopper_clasp_hole_r = 1.9;
 hopper_clasp_hole_d = 8;
 hopper_clasp_hole_angular_offset = 46;
 
+hopper_lid_height = 10;
+hopper_lid_undersize_r_min = 0.4;
+hopper_lid_undersize_r_max = 0.8;
+
 module hopper()
 {
   difference()
   {
     hopper_pos();
     hopper_neg();
+  }
+}
+
+module lid()
+{
+  difference()
+  {
+    cylinder(r=hopper_od/2, h=2*hopper_lid_height);
+
+    // rim cutout:
+    translate([0,0,-0.01])
+    {
+      difference()
+      {
+        cylinder(r=hopper_od/2+0.01,
+          h=hopper_lid_height-hopper_wall_w);
+        cylinder(
+          r1=hopper_od/2-hopper_wall_w-hopper_lid_undersize_r_max,
+          r2=hopper_od/2-hopper_wall_w-hopper_lid_undersize_r_min,
+          h=hopper_lid_height-hopper_wall_w);
+      }
+    }
+
+    // internal cutout:
+    translate([0,0,-0.01])
+      cylinder(r=hopper_od/2-2*hopper_wall_w, h=2*hopper_lid_height-hopper_wall_w);
   }
 }
 
@@ -122,8 +152,14 @@ module hopper_pos()
 //   parts put together.
 if ("display" == partname)
 {
+  translate ([0,0,hopper_total_h+10])
+    lid();
   hopper();
 } else if ("hopper" == partname)
 {
   hopper();
+} else if ("lid" == partname)
+{
+  rotate([180,0,0])
+    lid();
 }
