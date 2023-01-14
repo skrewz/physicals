@@ -8,6 +8,14 @@ flat seasonal decoration securely between years.
 I never made this work. The concept is sound, I think, but the devil is in the
 details.
 
+First off, I suspect you're better off scanning your flat-pack objects, as
+opposed to photographing them. I did the latter, and I think some of my issues
+were related to perspective etc. Of course, if you've produced the flatpack
+object yourself, you should prefer to go straight to the source of truth.
+
+If they have texture on one side, scan them on the blander side and rotate in
+software. This makes the image manipulation more straightforward.
+
 This case assumes that you've pre-processed the image similarly to
 `cutout.png`:
 
