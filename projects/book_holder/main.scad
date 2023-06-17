@@ -1,8 +1,9 @@
 // Use partname to control which object is being rendered:
 //
-// _partname_values holder
-partname = "display";
+// _partname_values holder page_clip
+partname = "page_clip";
 
+include <libs/compass.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
 $fa = 5;
 // $fs is the minimum size of a fragment. If high, causes
@@ -22,6 +23,25 @@ book_base_rim_cutout_r = 20;
 
 opening_angle = 120;
 lean_angle = 30;
+
+page_clip_material_thickness = 7;
+
+page_clip_width = 10;
+page_clip_depth = book_base_support_d/2;
+page_clip_height = book_base_support_d;
+page_clip_clearance = 1;
+page_clip_grab_extension = 5;
+page_clip_bar_width = book_base_support_d/2;
+page_clip_elastic_extension = 5;
+
+
+clip_holder_pivot_axle_r = 1.7;
+clip_holder_width = page_clip_width + 2*page_clip_clearance + 2*wall_w;
+
+clip_elastic_offset = 0.5*page_clip_depth;
+// depends on which kind of elastic you'd intend to use:
+clip_elastic_spread = 80;
+
 
 module big_book ()
 {
@@ -167,6 +187,75 @@ module planes()
 
 //big_book();
 
+module round_cylinder(r, h)
+{
+  translate([0,0,r])
+  {
+    sphere(r=r);
+    cylinder(r=r, h=h-2*r);
+  }
+  translate([0,0,h-r])
+  {
+    sphere(r=r);
+  }
+}
+
+module page_clip()
+{
+  page_clip_triangle_scale = 2;
+  rotate([0,90,0])
+  {
+
+    difference()
+    {
+      union()
+      {
+        hull()
+        {
+          cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
+          translate([0,-page_clip_depth,0])
+          {
+            round_cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
+          }
+        }
+        translate([0,-page_clip_depth,0])
+        {
+          hull()
+          {
+            round_cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
+            translate([-(page_clip_height+page_clip_grab_extension),0,0])
+            {
+              round_cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
+            }
+          }
+        }
+        hull()
+        {
+          translate([-page_clip_height,-page_clip_depth,page_clip_width/2])
+          {
+            rotate([0,-90,0])
+            {
+              for(coord = [
+                [-page_clip_triangle_scale*page_clip_bar_width,0],
+                [page_clip_triangle_scale*page_clip_bar_width,0],
+              ]) {
+                translate(coord)
+                {
+                  sphere(r=page_clip_material_thickness/2);
+                }
+              }
+            }
+          }
+        }
+      }
+      translate([0,0,-0.01])
+      {
+        cylinder(r=clip_holder_pivot_axle_r, h=page_clip_width+0.02);
+      }
+    }
+  }
+}
+
 module holder ()
 {
   difference()
@@ -188,6 +277,68 @@ module holder ()
               rotate([0,90,0])
               rotate([0,handle_downward_angle,0])
               handle();
+            }
+          }
+        }
+      }
+
+
+      // Place page clip
+      rotate([-lean_angle,0,0])
+      {
+        translate([0,-book_base_support_d,0])
+        {
+          // Clip base
+          rotate([0,90,0])
+          {
+            translate([0,0,-clip_holder_width/2])
+            {
+              difference()
+              {
+                hull()
+                {
+                  cylinder(r=page_clip_material_thickness/2, h=clip_holder_width);
+                  translate([page_clip_material_thickness+page_clip_elastic_extension,0,0])
+                  {
+                    cylinder(r=page_clip_material_thickness/2, h=clip_holder_width);
+                  }
+                }
+                translate([page_clip_material_thickness,0,-0.01])
+                {
+                  cylinder(r=clip_holder_pivot_axle_r, h=clip_holder_width+0.02);
+                }
+                translate([0,0,page_clip_width/2])
+                {
+                  hull()
+                  {
+                    cylinder(r=page_clip_material_thickness/2+0.01, h=page_clip_width+2*page_clip_clearance);
+                    translate([page_clip_material_thickness+page_clip_elastic_extension,0,0])
+                    {
+                      cylinder(r=page_clip_material_thickness/2+0.01, h=page_clip_width+2*page_clip_clearance);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Place elastic mounts
+      rotate([-lean_angle,0,0])
+      {
+        translate([0,-book_base_support_d-clip_elastic_offset,0])
+        {
+          for (coord = [
+            [-clip_elastic_spread/2,0,0],
+            [clip_elastic_spread/2,0,0],
+          ]){
+            translate(coord)
+            {
+              translate([0,0,-wall_w])
+              {
+                cylinder(r1=wall_w,r2=wall_w/2,h=wall_w);
+              }
             }
           }
         }
@@ -233,11 +384,27 @@ module holder ()
 //   parts put together.
 if ("display" == partname)
 {
-  translate([0,0,10])
+  holder();
+  rotate([-lean_angle,0,0])
   {
-    holder();
+    translate([0,-book_base_support_d,0])
+    {
+      translate([-page_clip_width/2,0,-page_clip_material_thickness])
+      {
+        rotate([-10,0,0])
+        {
+          page_clip();
+        }
+      }
+    }
   }
 } else if ("holder" == partname)
 {
   holder();
+} else if ("page_clip" == partname)
+{
+  rotate([90,0,0])
+  {
+    page_clip();
+  }
 }
