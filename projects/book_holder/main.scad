@@ -1,7 +1,7 @@
 // Use partname to control which object is being rendered:
 //
 // _partname_values holder page_clip
-partname = "page_clip";
+partname = "display";
 
 include <libs/compass.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
@@ -203,6 +203,9 @@ module round_cylinder(r, h)
 module page_clip()
 {
   page_clip_triangle_scale = 2;
+  page_clip_pivot_axle_r = 1.5;
+  page_clip_pivot_axle_clearance = 0.5;
+
   rotate([0,90,0])
   {
 
@@ -223,26 +226,65 @@ module page_clip()
           hull()
           {
             round_cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
-            translate([-(page_clip_height+page_clip_grab_extension),0,0])
+            translate([-(page_clip_height-page_clip_material_thickness/2),0,page_clip_width/2])
             {
-              round_cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
+              rotate([0,90,0])
+              {
+                cylinder(r=page_clip_material_thickness/2,h=0.01);
+              }
             }
           }
-        }
-        hull()
-        {
-          translate([-page_clip_height,-page_clip_depth,page_clip_width/2])
+          // Pivot axle:
+          translate([-(page_clip_height-page_clip_material_thickness/2),0,page_clip_width/2])
           {
             rotate([0,-90,0])
             {
-              for(coord = [
-                [-page_clip_triangle_scale*page_clip_bar_width,0],
-                [page_clip_triangle_scale*page_clip_bar_width,0],
-              ]) {
-                translate(coord)
-                {
-                  sphere(r=page_clip_material_thickness/2);
+              cylinder(r=page_clip_pivot_axle_r,h=page_clip_material_thickness+2*page_clip_pivot_axle_clearance);
+            }
+          }
+          translate([-(page_clip_height+page_clip_material_thickness/2+2*page_clip_pivot_axle_clearance),0,page_clip_width/2])
+          {
+            hull()
+            {
+              rotate([0,90,0])
+              {
+                cylinder(r=page_clip_material_thickness/2,h=0.01);
+              }
+              translate([-page_clip_grab_extension,0,0])
+              {
+                sphere(r=page_clip_material_thickness/2);
+              }
+            }
+          }
+        }
+        difference()
+        {
+          hull()
+          {
+            translate([-(page_clip_height+page_clip_pivot_axle_clearance),-page_clip_depth,page_clip_width/2])
+            {
+              rotate([0,-90,0])
+              {
+                for(coord = [
+                  [-page_clip_triangle_scale*page_clip_bar_width,0],
+                  [page_clip_triangle_scale*page_clip_bar_width,0],
+                ]) {
+                  translate(coord)
+                  {
+                    sphere(r=page_clip_material_thickness/2);
+                  }
                 }
+              }
+            }
+          }
+          translate([-page_clip_height,-page_clip_depth,page_clip_width/2])
+          {
+            compass(100);
+            rotate([0,90,0])
+            {
+              translate([0,0,-page_clip_material_thickness/2])
+              {
+                cylinder(r=page_clip_pivot_axle_r+0.5, h=page_clip_material_thickness);
               }
             }
           }
