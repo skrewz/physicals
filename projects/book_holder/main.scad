@@ -31,8 +31,8 @@ page_clip_depth = book_base_support_d/2;
 page_clip_height = book_base_support_d;
 page_clip_clearance = 1;
 page_clip_grab_extension = 5;
-page_clip_bar_width = book_base_support_d/2;
-page_clip_elastic_extension = 5;
+page_clip_bar_width = 0.75*book_base_support_d;
+page_clip_elastic_extension = 10;
 
 
 clip_holder_pivot_axle_r = 1.7;
@@ -279,10 +279,9 @@ module page_clip()
           }
           translate([-page_clip_height,-page_clip_depth,page_clip_width/2])
           {
-            compass(100);
             rotate([0,90,0])
             {
-              translate([0,0,-page_clip_material_thickness/2])
+              translate([0,0,-page_clip_material_thickness/2-page_clip_pivot_axle_clearance])
               {
                 cylinder(r=page_clip_pivot_axle_r+0.5, h=page_clip_material_thickness);
               }
@@ -340,7 +339,11 @@ module holder ()
                 hull()
                 {
                   cylinder(r=page_clip_material_thickness/2, h=clip_holder_width);
-                  translate([page_clip_material_thickness+page_clip_elastic_extension,0,0])
+                  translate([page_clip_material_thickness,0,0])
+                  {
+                    cylinder(r=page_clip_material_thickness/2, h=clip_holder_width);
+                  }
+                  translate([page_clip_material_thickness,page_clip_elastic_extension,0])
                   {
                     cylinder(r=page_clip_material_thickness/2, h=clip_holder_width);
                   }
@@ -354,7 +357,11 @@ module holder ()
                   hull()
                   {
                     cylinder(r=page_clip_material_thickness/2+0.01, h=page_clip_width+2*page_clip_clearance);
-                    translate([page_clip_material_thickness+page_clip_elastic_extension,0,0])
+                    translate([page_clip_material_thickness,0,0])
+                    {
+                      cylinder(r=page_clip_material_thickness/2+0.01, h=page_clip_width+2*page_clip_clearance);
+                    }
+                    translate([page_clip_material_thickness,page_clip_elastic_extension,0])
                     {
                       cylinder(r=page_clip_material_thickness/2+0.01, h=page_clip_width+2*page_clip_clearance);
                     }
