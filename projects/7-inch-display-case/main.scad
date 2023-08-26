@@ -172,11 +172,11 @@ module assembled_holder()
       mirror([0,1,0])
       cube([10,frame_radius+0.02,3]);
     }
-        translate([111,0.01,2])
-        {
-          rotate([90,0,0])
-          cylinder(r1=10,r2=3,h=frame_radius+0.02);
-        }
+    translate([111,0.01,2])
+    {
+      rotate([90,0,0])
+      cylinder(r1=10,r2=3,h=frame_radius+0.02);
+    }
     /*
     translate([111,0.01,5])
     {
