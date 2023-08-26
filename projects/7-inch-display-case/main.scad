@@ -244,14 +244,8 @@ if ("display" == partname)
   }
 } else if ("left_part" == partname)
 {
-  rotate([0,90,0])
-  {
-    left_part();
-  }
+  left_part();
 } else if ("right_part" == partname)
 {
-  rotate([0,-90,0])
-  {
-    right_part();
-  }
+  right_part();
 }
