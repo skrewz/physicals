@@ -16,8 +16,10 @@ target_layer_height = 0.2;
 wall_w = 3;
 baseplate_thickness = 5;
 
-plate_width = 40;
-mount_width = 20;
+plate_width = 24;
+mount_width = plate_width;
+// Negative extends off towards lesser x:
+mount_cylinder_extension_width = -15;
 mount_cut_in_wd = [10,0];
 cylinder_height_over_mount = baseplate_thickness;
 
@@ -43,6 +45,17 @@ module end_mount()
       }
       translate([(plate_width-mount_width)/2,0,0])
       {
+        // Free-floating cylinder extension
+        translate([
+          0 > mount_cylinder_extension_width ? mount_cylinder_extension_width : 0,
+          clasp_dim/2,
+          cylinder_cutout_r+cylinder_height_over_mount,
+        ]) {
+          rotate([0,90,0])
+          {
+            cylinder(r=cylinder_cutout_r+wall_w,h=mount_width+abs(mount_cylinder_extension_width));
+          }
+        }
         hull()
         {
           translate([0,clasp_dim/2,cylinder_cutout_r+cylinder_height_over_mount])
@@ -52,16 +65,19 @@ module end_mount()
               cylinder(r=cylinder_cutout_r+wall_w,h=mount_width);
             }
           }
-          cube([mount_width, clasp_dim, 0.01]);
+          translate([(mount_width-plate_width)/2,0,0])
+          {
+            cube([plate_width, clasp_dim, 0.01]);
+          }
         }
       }
     }
     // The hole through for the actual cylinder
-    translate([-0.01,clasp_dim/2,cylinder_cutout_r+cylinder_height_over_mount])
+    translate([-abs(mount_cylinder_extension_width)-0.01,clasp_dim/2,cylinder_cutout_r+cylinder_height_over_mount])
     {
       rotate([0,90,0])
       {
-        cylinder(r=cylinder_cutout_r,h=plate_width+0.02);
+        cylinder(r=cylinder_cutout_r,h=2*abs(mount_cylinder_extension_width)+mount_width+0.02);
       }
     }
 
@@ -115,7 +131,6 @@ module mid_clamp()
         {
           translate([0,0,magnet_cutout_rh[1]-i*target_layer_height])
           {
-          #
             cylinder(r=1.2*magnet_cutout_rh[0],h=target_layer_height,$fn=6);
           }
         }
