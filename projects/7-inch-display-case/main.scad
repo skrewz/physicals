@@ -31,6 +31,12 @@ longest_bolt_tight_height = 7; // from base of bolt head to beginning of thread
 frame_radius = 25+7.5; // round totally flat at wall
 wall_w = 2;
 
+// +12 to really escape side panel when rotated
+pir_sensor_cutout_cylinder_rh = [10/2+0.2,8+12];
+pir_sensor_pcb_cutout_cube_wdh = [12,25+2.5,7];
+pir_sensor_pcb_wire_escape_h = 10;
+pir_sensor_rotation = [0,-30,0];
+pir_sensor_x_offset = 0.80*display_outer_wh[0];
 
 // The shape of the volume that's to be cut out of the internal holder:
 module internal_cutout_neg ()
@@ -164,6 +170,40 @@ module assembled_holder()
     translate([0,0,-0.01])
       internal_cutout_neg();
 
+    // Cut out PIR sensor hole
+    translate([pir_sensor_x_offset,display_outer_wh[1]+pir_sensor_cutout_cylinder_rh[0]+wall_w,0])
+    {
+      rotate(pir_sensor_rotation)
+      {
+        compass();
+        translate([-pir_sensor_pcb_cutout_cube_wdh[0]/2,pir_sensor_pcb_cutout_cube_wdh[2]/2,-pir_sensor_pcb_wire_escape_h])
+        {
+          translate([0,-pir_sensor_pcb_cutout_cube_wdh[2]-0.01,0])
+          {
+            mirror([0,1,0])
+            {
+              cube([
+                pir_sensor_pcb_cutout_cube_wdh[0],
+                pir_sensor_cutout_cylinder_rh[0]+wall_w-pir_sensor_pcb_cutout_cube_wdh[2]/2+0.02,
+                2*pir_sensor_pcb_wire_escape_h
+              ]);
+            }
+          }
+          rotate([90,0,0])
+          {
+            cube(pir_sensor_pcb_cutout_cube_wdh+[0,pir_sensor_pcb_wire_escape_h,0]);
+          }
+        }
+        translate([0,0,-pir_sensor_pcb_wire_escape_h-0.01])
+        {
+          cylinder(
+            r=pir_sensor_cutout_cylinder_rh[0],
+            h=pir_sensor_pcb_cutout_cube_wdh[1]+pir_sensor_pcb_wire_escape_h+pir_sensor_cutout_cylinder_rh[1]+0.01
+          );
+        }
+      }
+    }
+
     // cut out power supply cable exit hole:
     // (this version bends the cable fairly heavily, but then it exits at wall level)
     translate([111-(10/2),0.01,0])
@@ -242,6 +282,9 @@ if ("display" == partname)
   {
     assembled_holder();
   }
+} else if ("assembled_holder" == partname)
+{
+  assembled_holder();
 } else if ("left_part" == partname)
 {
   left_part();
