@@ -28,7 +28,7 @@ page_clip_material_thickness = 7;
 
 page_clip_width = 10;
 page_clip_depth = book_base_support_d/2;
-page_clip_height = book_base_support_d;
+page_clip_height = 1.5*book_base_support_d;
 page_clip_clearance = 1;
 page_clip_grab_extension = 5;
 page_clip_bar_width = 0.75*book_base_support_d;
