@@ -18,8 +18,10 @@ baseplate_thickness = 5;
 
 plate_width = 24;
 mount_width = plate_width;
+mount_wing_width= plate_width;
 // Negative extends off towards lesser x:
-mount_cylinder_extension_width = -15;
+mount_cylinder_extension_width = -13;
+mount_cylinder_extension_angle = 5;
 mount_cut_in_wd = [10,0];
 cylinder_height_over_mount = baseplate_thickness;
 
@@ -39,6 +41,10 @@ module end_mount()
     // The positive parts of the end_mount
     union ()
     {
+      translate([-baseplate_thickness,-outrigger_downwards,-mount_wing_width])
+      {
+        cube([baseplate_thickness,outrigger_downwards+clasp_dim+outrigger_upwards,mount_wing_width+baseplate_thickness]);
+      }
       translate([0,-outrigger_downwards,0])
       {
         cube([plate_width,outrigger_downwards+clasp_dim+outrigger_upwards,baseplate_thickness]);
@@ -75,9 +81,17 @@ module end_mount()
     // The hole through for the actual cylinder
     translate([-abs(mount_cylinder_extension_width)-0.01,clasp_dim/2,cylinder_cutout_r+cylinder_height_over_mount])
     {
-      rotate([0,90,0])
+    #
+      compass();
+      rotate([0,mount_cylinder_extension_angle,0])
       {
-        cylinder(r=cylinder_cutout_r,h=2*abs(mount_cylinder_extension_width)+mount_width+0.02);
+        rotate([0,90,0])
+        {
+          translate([0,0,-wall_w])
+          {
+            cylinder(r=cylinder_cutout_r,h=wall_w+2*abs(mount_cylinder_extension_width)+mount_width+0.02);
+          }
+        }
       }
     }
 
@@ -161,7 +175,10 @@ if ("display" == partname)
   }
 } else if ("end_mount" == partname)
 {
-  end_mount();
+  rotate([90,0,0])
+  {
+    end_mount();
+  }
 } else if ("mid_clamp" == partname)
 {
   mid_clamp();
