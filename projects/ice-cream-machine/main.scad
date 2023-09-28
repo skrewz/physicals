@@ -5,6 +5,7 @@ partname = "display";
 
 include <libs/compass.scad>
 include <libs/gears.scad>
+include <libs/n20.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
 $fa = $preview ? 12 : 4;
 // $fs is the minimum size of a fragment. If high, causes
@@ -19,10 +20,10 @@ gear_width = 5;
 container_rh = [271/(3.1415*2), 77+2];
 
 
-motor_axle_offset = [7, container_rh[1]/2];
+n20_motor_axle_offset = [7, container_rh[1]/2];
 stand_wdh = [3*container_rh[0], 1.7*gear_teeth, 0];
 
-motor_mount_r_scale_factor = 1.1;
+n20_motor_mount_r_scale_factor = 1.1;
 
 wall_w = 2;
 stand_wall_w = 3;
@@ -36,70 +37,29 @@ m3_cap_clear_height=1.7;
 m3_nut_width=6;
 m3_nut_height_cutout=4;
 
-motor_length=17;
-motor_gearing_length=9;
-motor_gearing_width=12;
-motor_gearing_height=10;
-motor_rear_clearance=2;
-motor_diameter=12;
-motor_flattened_height=10;
-motor_axle_protrusion=9;
-motor_axle_clearing=1; // length above gearbox
-motor_axle_diameter=3;
-motor_axle_flattened_diameter=2.5;
+n20_motor_axle_protrusion=9;
+n20_motor_axle_diameter=3;
 
 offset_for_gear = 1*gear_teeth/2;
 
 bottle_holder_axle_offset_xyz = [
-  motor_axle_offset[0]-gear_width/2,
-  motor_length+motor_gearing_length+1.4*offset_for_gear,
-  offset_for_gear+motor_axle_offset[1]+6
+  n20_motor_axle_offset[0]-gear_width/2,
+  n20_motor_length+n20_motor_gearing_length+1.4*offset_for_gear,
+  offset_for_gear+n20_motor_axle_offset[1]+6
 ];
 
 
 free_moving_axle_r = 4;
 free_moving_axle_bearing_oversize = 0.7;
-axle_bearing_wd = [2*motor_axle_offset[0],2*stand_wall_w];
+axle_bearing_wd = [2*n20_motor_axle_offset[0],2*stand_wall_w];
 
-bottle_holder_length = stand_wdh[0]-motor_axle_offset[0]+gear_width/2;
+bottle_holder_length = stand_wdh[0]-n20_motor_axle_offset[0]+gear_width/2;
 bottle_holder_axle_r = free_moving_axle_r+wall_w;
 
 bottle_axis_bearing_offsets = [
     gear_width+5,
     bottle_holder_length-axle_bearing_wd[1],
 ];
-
-module motor_axle ()
-{
-  intersection(){
-    cylinder(r=motor_axle_diameter/2,h=motor_axle_protrusion,$fn=40);
-
-    translate ([-motor_axle_diameter/2,-motor_axle_diameter/2,(/*ccf*/-0.01)*motor_axle_protrusion])
-      cube(size=[motor_axle_diameter,motor_axle_flattened_diameter,motor_axle_protrusion*1.02]);
-  }
-}
-
-module motor ()
-{
-  // The motor itself:
-  union () {
-    color("grey")
-      intersection(){
-        cylinder(r=motor_diameter/2,h=motor_length);
-        translate ([-motor_gearing_width/2,-motor_gearing_height/2,0])
-          cube(size=[motor_gearing_width,motor_gearing_height,motor_length]);
-      }
-    // The gearing mechanism:
-    color("yellow")
-      translate([0,0,(/*ccf*/0.99)*motor_length])
-      translate ([-motor_gearing_width/2,-motor_gearing_height/2,0])
-      cube(size=[motor_gearing_width,motor_gearing_height,motor_gearing_length]);
-    // The axle:
-    color("silver")
-      translate([0,0,(/*ccf*/0.98)*(motor_length+motor_gearing_length)])
-      motor_axle();
-  }
-}
 
 module stand()
 {
@@ -109,9 +69,8 @@ module stand()
     {
       difference()
       {
-      #
         cube([axle_bearing_wd[0],axle_bearing_wd[1],radius_height+2*free_moving_axle_r]);
-        translate([motor_axle_offset[0],0,radius_height])
+        translate([n20_motor_axle_offset[0],0,radius_height])
         {
           rotate([90,0,0])
           {
@@ -151,12 +110,12 @@ module stand()
 
   translate([0,0,stand_wall_w])
   {
-    motor_mount();
+    n20_motor_mount();
   }
 
-  translate([motor_axle_offset[0],stand_wdh[1]-axle_bearing_wd[1],stand_wall_w])
+  translate([n20_motor_axle_offset[0],stand_wdh[1]-axle_bearing_wd[1],stand_wall_w])
   {
-    axle_bearing(motor_axle_offset[1], true);
+    axle_bearing(n20_motor_axle_offset[1], true);
   }
 
   // Bottle axis bearings:
@@ -175,16 +134,16 @@ module stand()
   }
 }
 
-module motor_mount()
+module n20_motor_mount()
 {
   difference()
   {
     cube([
-      2*motor_axle_offset[0],
-      motor_length,
-      motor_gearing_width/2+motor_axle_offset[1]]
+      2*n20_motor_axle_offset[0],
+      n20_motor_length,
+      n20_motor_gearing_width/2+n20_motor_axle_offset[1]]
     );
-    translate([motor_axle_offset[0],0,motor_axle_offset[1]])
+    translate([n20_motor_axle_offset[0],0,n20_motor_axle_offset[1]])
     {
       rotate([-90,0,0])
       {
@@ -192,28 +151,28 @@ module motor_mount()
         {
           intersection()
           {
-            cylinder(r=motor_mount_r_scale_factor*motor_diameter/2,h=motor_length);
+            cylinder(r=n20_motor_mount_r_scale_factor*n20_motor_diameter/2,h=n20_motor_length);
             translate([
-              -motor_mount_r_scale_factor*motor_gearing_width/2,
-              -motor_mount_r_scale_factor*motor_gearing_height/2,
+              -n20_motor_mount_r_scale_factor*n20_motor_gearing_width/2,
+              -n20_motor_mount_r_scale_factor*n20_motor_gearing_height/2,
               0]){
               cube([
-                motor_mount_r_scale_factor*motor_gearing_width,
-                motor_mount_r_scale_factor*motor_gearing_height,
-                motor_mount_r_scale_factor*motor_length]);
+                n20_motor_mount_r_scale_factor*n20_motor_gearing_width,
+                n20_motor_mount_r_scale_factor*n20_motor_gearing_height,
+                n20_motor_mount_r_scale_factor*n20_motor_length]);
             }
           }
           translate([
-            -motor_mount_r_scale_factor*motor_gearing_width,
-            -motor_mount_r_scale_factor*motor_gearing_height/2,
+            -n20_motor_mount_r_scale_factor*n20_motor_gearing_width,
+            -n20_motor_mount_r_scale_factor*n20_motor_gearing_height/2,
             0]){
             cube([
-              motor_mount_r_scale_factor*motor_gearing_width,
-              motor_mount_r_scale_factor*motor_gearing_height,
-              motor_mount_r_scale_factor*motor_length]);
+              n20_motor_mount_r_scale_factor*n20_motor_gearing_width,
+              n20_motor_mount_r_scale_factor*n20_motor_gearing_height,
+              n20_motor_mount_r_scale_factor*n20_motor_length]);
           }
           %
-          motor();
+          n20_motor();
         }
       }
     }
@@ -315,7 +274,7 @@ module worm_drive ()
 {
   gangzahl=1; //worm_starts;
   breite=width;
-  laenge=stand_wdh[1]-motor_length-motor_gearing_length-2;
+  laenge=stand_wdh[1]-n20_motor_length-n20_motor_gearing_length-2;
   bohrung_schnecke=3; //worm_bore;
   bohrung_rad=bore;
   nabendicke=final_hub_thickness;
@@ -345,8 +304,8 @@ module worm_drive ()
       translate([0,0,-0.01])
       {
         // elephant foot clearing
-        cylinder(r1=1.5*motor_axle_diameter/2, r2=motor_axle_diameter/2, h=0.5);
-        cylinder(r=motor_axle_diameter/2,h=2+motor_axle_protrusion);
+        cylinder(r1=1.5*n20_motor_axle_diameter/2, r2=n20_motor_axle_diameter/2, h=0.5);
+        cylinder(r=n20_motor_axle_diameter/2,h=2+n20_motor_axle_protrusion);
       }
 
       // clamp-down on motor axle:
@@ -388,9 +347,9 @@ if ("display" == partname)
   translate([0,0,stand_wall_w])
   {
     translate([
-      motor_axle_offset[0],
-      motor_length+motor_gearing_length+0.5,
-      motor_axle_offset[1]]
+      n20_motor_axle_offset[0],
+      n20_motor_length+n20_motor_gearing_length+0.5,
+      n20_motor_axle_offset[1]]
     ){
       worm_drive();
     }
