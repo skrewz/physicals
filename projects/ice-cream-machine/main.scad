@@ -29,14 +29,6 @@ wall_w = 2;
 stand_wall_w = 3;
 
 
-
-m3_radius=1.6;
-m3_cap_radius=2.6;
-m3_cap_clear_height=1.7;
-// the width of a nut, if we're making cutouts for it:
-m3_nut_width=6;
-m3_nut_height_cutout=4;
-
 n20_motor_axle_protrusion=9;
 n20_motor_axle_diameter=3;
 
@@ -283,7 +275,6 @@ module worm_drive ()
   steigungswinkel=8; //lead_angle;
   zusammen_gebaut=true; //true;
 
-  motor_clamp_r = 4+m3_nut_height_cutout;
 
   rotate([-90,0,0])
   {
@@ -296,36 +287,7 @@ module worm_drive ()
     {
       cylinder(r=free_moving_axle_r,h=10);
     }
-    difference()
-    {
-      cylinder(r=motor_clamp_r,h=7);
-
-      // motor axle:
-      translate([0,0,-0.01])
-      {
-        // elephant foot clearing
-        cylinder(r1=1.5*n20_motor_axle_diameter/2, r2=n20_motor_axle_diameter/2, h=0.5);
-        cylinder(r=n20_motor_axle_diameter/2,h=2+n20_motor_axle_protrusion);
-      }
-
-      // clamp-down on motor axle:
-      translate([0,0,m3_nut_width/2])
-      {
-        rotate([-90,0,0])
-        {
-          cylinder(r=m3_cap_radius,h=m3_cap_clear_height);
-        }
-        rotate([-90,0,0])
-        {
-          cylinder(r=m3_radius,h=motor_clamp_r);
-        }
-      }
-      // nut holder for clamp-down:
-      translate([-m3_nut_width/2,motor_clamp_r/2-m3_nut_height_cutout/2,-0.01])
-      {
-        cube([m3_nut_width,m3_nut_height_cutout,motor_clamp_r-(motor_clamp_r-m3_nut_width)]);
-      }
-    }
+    n20_axle_mount();
     translate([0,0,7])
     {
       schnecke(1, gangzahl, laenge-7-7, bohrung_schnecke, eingriffswinkel, steigungswinkel, zusammen_gebaut);
