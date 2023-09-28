@@ -1,6 +1,6 @@
 // Use partname to control which object is being rendered:
 //
-// _partname_values stand worm_drive bottle_holder
+// _partname_values stand worm_drive container_holder
 partname = "display";
 
 include <libs/compass.scad>
@@ -12,20 +12,20 @@ $fa = $preview ? 12 : 4;
 $fs = $preview ? 2 : 0.5;
 
 
-motor_axle_offset = [7, 25];
 gear_teeth = 60;
 gear_width = 5;
 
+// Salsa dip container circumference/height: 271mm/77mm
+container_rh = [271/(3.1415*2), 77+2];
 
 
-stand_wdh = [100, 1.7*gear_teeth, 0];
+motor_axle_offset = [7, container_rh[1]/2];
+stand_wdh = [3*container_rh[0], 1.7*gear_teeth, 0];
 
 motor_mount_r_scale_factor = 1.1;
 
-bottle_cutout_r = 30;
-bottle_cutout_height = 40;
-
-wall_w = 3;
+wall_w = 2;
+stand_wall_w = 3;
 
 
 
@@ -59,7 +59,7 @@ bottle_holder_axle_offset_xyz = [
 
 free_moving_axle_r = 4;
 free_moving_axle_bearing_oversize = 0.7;
-axle_bearing_wd = [2*motor_axle_offset[0],2*wall_w];
+axle_bearing_wd = [2*motor_axle_offset[0],2*stand_wall_w];
 
 bottle_holder_length = stand_wdh[0]-motor_axle_offset[0]+gear_width/2;
 bottle_holder_axle_r = free_moving_axle_r+wall_w;
@@ -109,25 +109,26 @@ module stand()
     {
       difference()
       {
+      #
         cube([axle_bearing_wd[0],axle_bearing_wd[1],radius_height+2*free_moving_axle_r]);
         translate([motor_axle_offset[0],0,radius_height])
         {
           rotate([90,0,0])
           {
-            translate([0,0,-2*wall_w])
+            translate([0,0,-2*stand_wall_w])
             {
               if (closed)
               {
-                cylinder(r=free_moving_axle_bearing_oversize + free_moving_axle_r,h=3*wall_w);
+                cylinder(r=free_moving_axle_bearing_oversize + free_moving_axle_r,h=3*stand_wall_w);
               }
               else
               {
                 hull ()
                 {
-                  cylinder(r=free_moving_axle_bearing_oversize + free_moving_axle_r,h=3*wall_w);
+                  cylinder(r=free_moving_axle_bearing_oversize + free_moving_axle_r,h=3*stand_wall_w);
                   translate([0,2*free_moving_axle_r,0])
                   {
-                    cylinder(r=free_moving_axle_bearing_oversize + free_moving_axle_r,h=3*wall_w);
+                    cylinder(r=free_moving_axle_bearing_oversize + free_moving_axle_r,h=3*stand_wall_w);
                   }
                 }
               }
@@ -138,22 +139,22 @@ module stand()
     }
   }
   
-  cube([axle_bearing_wd[0],stand_wdh[1],wall_w]);
+  cube([axle_bearing_wd[0],stand_wdh[1],stand_wall_w]);
   translate([
    0, 
    bottle_holder_axle_offset_xyz[1]-axle_bearing_wd[0]/2, 
    0, 
   ]) {
-    cube([stand_wdh[0],axle_bearing_wd[0],wall_w]);
+    cube([stand_wdh[0],axle_bearing_wd[0],stand_wall_w]);
   }
-  /* cube([stand_wdh[0],stand_wdh[1],wall_w]); */
+  /* cube([stand_wdh[0],stand_wdh[1],stand_wall_w]); */
 
-  translate([0,0,wall_w])
+  translate([0,0,stand_wall_w])
   {
     motor_mount();
   }
 
-  translate([motor_axle_offset[0],stand_wdh[1]-axle_bearing_wd[1],wall_w])
+  translate([motor_axle_offset[0],stand_wdh[1]-axle_bearing_wd[1],stand_wall_w])
   {
     axle_bearing(motor_axle_offset[1], true);
   }
@@ -219,7 +220,7 @@ module motor_mount()
   }
 }
 
-module bottle_holder ()
+module container_holder ()
 {
 
   // Gear part:
@@ -263,16 +264,19 @@ module bottle_holder ()
       // Place bearing piece on far side:
       cylinder(r=free_moving_axle_r,h=bottle_holder_length+axle_bearing_wd[1]);
 
-      translate([0,bottle_cutout_height/2,bottle_holder_length-bottle_cutout_r-wall_w-7])
+      translate([0,container_rh[1]/2,bottle_holder_length-container_rh[0]-wall_w-7])
       {
         rotate([90,0,0])
         {
           difference()
           {
-            cylinder(r=bottle_cutout_r+wall_w,h=bottle_cutout_height);
-            translate([-(bottle_cutout_r+wall_w),-(bottle_cutout_r+wall_w),-0.01])
+            translate([0,0,-wall_w])
             {
-              cube([bottle_cutout_r+wall_w-bottle_holder_axle_r,2*bottle_cutout_r+2*wall_w,bottle_cutout_height+0.02]);
+              cylinder(r=container_rh[0]+wall_w,h=container_rh[1]+2*wall_w);
+            }
+            translate([-(container_rh[0]+wall_w),-(container_rh[0]+wall_w),-wall_w-0.01])
+            {
+              cube([container_rh[0]+2*wall_w-bottle_holder_axle_r,2*container_rh[0]+2*wall_w,container_rh[1]+2*wall_w+0.02]);
             }
           }
         }
@@ -290,13 +294,17 @@ module bottle_holder ()
         }
       }
     }
-    translate([0,bottle_cutout_height/2,bottle_holder_length-bottle_cutout_r-wall_w-7])
+    translate([0,container_rh[1]/2,bottle_holder_length-container_rh[0]-wall_w-7])
     {
       rotate([90,0,0])
       {
         translate([0,0,-0.01])
         {
-          cylinder(r=bottle_cutout_r,h=bottle_cutout_height+0.02);
+          cylinder(r=container_rh[0],h=container_rh[1]+0.02);
+        }
+        translate([0,0,-wall_w-0.01])
+        {
+          cylinder(r=container_rh[0]-2*wall_w,h=container_rh[1]+2*wall_w+0.02);
         }
       }
     }
@@ -377,7 +385,7 @@ module worm_drive ()
 //   parts put together.
 if ("display" == partname)
 {
-  translate([0,0,wall_w])
+  translate([0,0,stand_wall_w])
   {
     translate([
       motor_axle_offset[0],
@@ -393,7 +401,10 @@ if ("display" == partname)
   {
     rotate([0,90,0])
     {
-      bottle_holder();
+      rotate([0,0,45])
+      {
+        container_holder();
+      }
     }
   }
 
@@ -408,7 +419,7 @@ if ("display" == partname)
   {
     worm_drive();
   }
-} else if ("bottle_holder" == partname)
+} else if ("container_holder" == partname)
 {
-  bottle_holder();
+  container_holder();
 }
