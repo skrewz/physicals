@@ -52,6 +52,8 @@ module n20_motor ()
 
 module n20_axle_mount ()
 {
+  $fa = 1;
+  $fs = 1;
   motor_clamp_r = 4+m3_nut_height_cutout;
   difference()
   {
