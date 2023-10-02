@@ -1,9 +1,10 @@
 // Use partname to control which object is being rendered:
 //
-// _partname_values holder page_clip
+// _partname_values holder u_shape_page_clip
 partname = "display";
 
 include <libs/compass.scad>
+include <libs/metric_bolts_and_nuts.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
 $fa = 5;
 // $fs is the minimum size of a fragment. If high, causes
@@ -26,12 +27,16 @@ lean_angle = 30;
 
 page_clip_material_thickness = 7;
 
+page_clip_u_bar_length = 20;
+page_clip_u_bar_tip_r = page_clip_material_thickness/2/2;
+
 page_clip_width = 10;
-page_clip_depth = book_base_support_d/2;
+page_clip_depth = book_base_support_d/2 + page_clip_u_bar_length;
 page_clip_height = 1.5*book_base_support_d;
 page_clip_clearance = 1;
 page_clip_grab_extension = 5;
-page_clip_bar_width = 0.75*book_base_support_d;
+// The width of the main spar of the clip:
+page_clip_bar_width = 1.0*book_base_support_d;
 page_clip_elastic_extension = 10;
 
 
@@ -200,98 +205,134 @@ module round_cylinder(r, h)
   }
 }
 
-module page_clip()
+module u_shape_page_clip()
 {
   page_clip_triangle_scale = 2;
   page_clip_pivot_axle_r = 1.5;
   page_clip_pivot_axle_clearance = 0.5;
 
-  rotate([0,90,0])
+  module u_shape_page_bar()
   {
+    page_clip_triangle_scale = 2;
 
-    difference()
-    {
-      union()
+      difference()
       {
-        hull()
+        union()
         {
-          cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
-          translate([0,-page_clip_depth,0])
+          union()
           {
-            round_cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
-          }
-        }
-        translate([0,-page_clip_depth,0])
-        {
-          hull()
-          {
-            round_cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
-            translate([-(page_clip_height-page_clip_material_thickness/2),0,page_clip_width/2])
-            {
-              rotate([0,90,0])
-              {
-                cylinder(r=page_clip_material_thickness/2,h=0.01);
-              }
-            }
-          }
-          // Pivot axle:
-          translate([-(page_clip_height-page_clip_material_thickness/2),0,page_clip_width/2])
-          {
-            rotate([0,-90,0])
-            {
-              cylinder(r=page_clip_pivot_axle_r,h=page_clip_material_thickness+2*page_clip_pivot_axle_clearance);
-            }
-          }
-          translate([-(page_clip_height+page_clip_material_thickness/2+2*page_clip_pivot_axle_clearance),0,page_clip_width/2])
-          {
+            // main spar across
             hull()
             {
-              rotate([0,90,0])
-              {
-                cylinder(r=page_clip_material_thickness/2,h=0.01);
-              }
-              translate([-page_clip_grab_extension,0,0])
-              {
-                sphere(r=page_clip_material_thickness/2);
+              for(coord = [
+                [-page_clip_triangle_scale*page_clip_bar_width,0],
+                [page_clip_triangle_scale*page_clip_bar_width,0],
+              ]) {
+                translate(coord)
+                {
+                  sphere(r=page_clip_material_thickness/2);
+                }
               }
             }
-          }
-        }
-        difference()
-        {
-          hull()
-          {
-            translate([-(page_clip_height+page_clip_pivot_axle_clearance),-page_clip_depth,page_clip_width/2])
-            {
-              rotate([0,-90,0])
+
+            // outriggers toward page
+            for(coord = [
+              [-page_clip_triangle_scale*page_clip_bar_width,0,0],
+              [page_clip_triangle_scale*page_clip_bar_width,0,0],
+            ]) {
+              hull()
               {
-                for(coord = [
-                  [-page_clip_triangle_scale*page_clip_bar_width,0],
-                  [page_clip_triangle_scale*page_clip_bar_width,0],
-                ]) {
-                  translate(coord)
+                translate(coord)
+                {
+                  sphere(r=page_clip_material_thickness/2);
+                  translate([0,0,-page_clip_u_bar_length])
                   {
-                    sphere(r=page_clip_material_thickness/2);
+                    sphere(r=page_clip_u_bar_tip_r);
                   }
                 }
               }
             }
           }
-          translate([-page_clip_height,-page_clip_depth,page_clip_width/2])
+        }
+        translate([0,page_clip_material_thickness/2-0.01,0])
+        {
+          rotate([90,0,0])
           {
-            rotate([0,90,0])
+            cylinder(r=page_clip_pivot_axle_r+0.5, h=page_clip_material_thickness+0.02);
+          }
+        }
+      }
+  }
+
+  difference()
+  {
+    union()
+    {
+      hull()
+      {
+        translate([-page_clip_width/2,0,0])
+        {
+          rotate([0,90,0])
+          {
+            cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
+          }
+        }
+        translate([0,0,page_clip_depth])
+        {
+          sphere(r=page_clip_material_thickness/2);
+        }
+      }
+
+      translate([0,0,page_clip_depth])
+      {
+        hull()
+        {
+          sphere(r=page_clip_material_thickness/2);
+          translate([0,(page_clip_height-page_clip_material_thickness/2),0])
+          {
+            rotate([90,0,0])
             {
-              translate([0,0,-page_clip_material_thickness/2-page_clip_pivot_axle_clearance])
-              {
-                cylinder(r=page_clip_pivot_axle_r+0.5, h=page_clip_material_thickness);
-              }
+              cylinder(r=page_clip_material_thickness/2,h=0.01);
             }
           }
         }
       }
-      translate([0,0,-0.01])
+      // Pivot axle:
+      translate([0,(page_clip_height-page_clip_material_thickness/2),page_clip_depth])
       {
-        cylinder(r=clip_holder_pivot_axle_r, h=page_clip_width+0.02);
+        rotate([-90,0,0])
+        {
+          cylinder(r=page_clip_pivot_axle_r,h=page_clip_material_thickness+2*page_clip_pivot_axle_clearance);
+        }
+      }
+
+      // Knob on top of pivot axle:
+      translate([0,(page_clip_height+page_clip_material_thickness/2+2*page_clip_pivot_axle_clearance),page_clip_depth])
+      {
+        hull()
+        {
+          rotate([90,0,0])
+          {
+            cylinder(r=page_clip_material_thickness/2,h=0.01);
+          }
+          translate([0,page_clip_grab_extension,0])
+          {
+            sphere(r=page_clip_material_thickness/2);
+          }
+        }
+      }
+
+      // The bar
+      translate([0,(page_clip_height+1*page_clip_pivot_axle_clearance),page_clip_depth])
+      {
+        u_shape_page_bar();
+      }
+    }
+    translate([-page_clip_width/2-0.01,0,0])
+    {
+      rotate([0,90,0])
+      {
+        cylinder(r=m3_radius_for_cutaway, h=page_clip_width+0.02);
       }
     }
   }
@@ -438,11 +479,11 @@ if ("display" == partname)
   {
     translate([0,-book_base_support_d,0])
     {
-      translate([-page_clip_width/2,0,-page_clip_material_thickness])
+      translate([0,0,-page_clip_material_thickness])
       {
-        rotate([-10,0,0])
+        rotate([90+20,0,0])
         {
-          page_clip();
+          u_shape_page_clip();
         }
       }
     }
@@ -450,10 +491,10 @@ if ("display" == partname)
 } else if ("holder" == partname)
 {
   holder();
-} else if ("page_clip" == partname)
+} else if ("u_shape_page_clip" == partname)
 {
-  rotate([90,0,0])
+  rotate([180,0,0])
   {
-    page_clip();
+    u_shape_page_clip();
   }
 }
