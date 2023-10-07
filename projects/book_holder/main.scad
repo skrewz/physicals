@@ -33,6 +33,7 @@ page_clip_u_bar_tip_r = page_clip_material_thickness/2/2;
 page_clip_width = 10;
 page_clip_depth = book_base_support_d/2 + page_clip_u_bar_length;
 page_clip_height = 1.5*book_base_support_d;
+page_clip_height_firstpart = 1/8*page_clip_height;
 page_clip_clearance = 1;
 page_clip_grab_extension = 5;
 // The width of the main spar of the clip:
@@ -240,9 +241,22 @@ module u_shape_page_clip()
               [-page_clip_triangle_scale*page_clip_bar_width,0,0],
               [page_clip_triangle_scale*page_clip_bar_width,0,0],
             ]) {
+              // upward extension to page_clip_height
               hull()
               {
                 translate(coord)
+                {
+                  sphere(r=page_clip_material_thickness/2);
+                  translate([0,page_clip_height-page_clip_height_firstpart,0])
+                  {
+                    sphere(r=page_clip_material_thickness/2);
+                  }
+                }
+              }
+              // the cone-shaped page holders
+              hull()
+              {
+                translate(coord+[0,page_clip_height-page_clip_height_firstpart,0])
                 {
                   sphere(r=page_clip_material_thickness/2);
                   translate([0,0,-page_clip_u_bar_length])
@@ -288,7 +302,7 @@ module u_shape_page_clip()
         hull()
         {
           sphere(r=page_clip_material_thickness/2);
-          translate([0,(page_clip_height-page_clip_material_thickness/2),0])
+          translate([0,(page_clip_height_firstpart-page_clip_material_thickness/2),0])
           {
             rotate([90,0,0])
             {
@@ -298,7 +312,7 @@ module u_shape_page_clip()
         }
       }
       // Pivot axle:
-      translate([0,(page_clip_height-page_clip_material_thickness/2),page_clip_depth])
+      translate([0,(page_clip_height_firstpart-page_clip_material_thickness/2),page_clip_depth])
       {
         rotate([-90,0,0])
         {
@@ -307,7 +321,7 @@ module u_shape_page_clip()
       }
 
       // Knob on top of pivot axle:
-      translate([0,(page_clip_height+page_clip_material_thickness/2+2*page_clip_pivot_axle_clearance),page_clip_depth])
+      translate([0,(page_clip_height_firstpart+page_clip_material_thickness/2+2*page_clip_pivot_axle_clearance),page_clip_depth])
       {
         hull()
         {
@@ -323,8 +337,9 @@ module u_shape_page_clip()
       }
 
       // The bar
-      translate([0,(page_clip_height+1*page_clip_pivot_axle_clearance),page_clip_depth])
+      translate([0,(page_clip_height_firstpart+1*page_clip_pivot_axle_clearance),page_clip_depth])
       {
+        compass();
         u_shape_page_bar();
       }
     }
