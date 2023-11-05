@@ -5,6 +5,7 @@ partname = "display";
 
 include <libs/compass.scad>
 include <libs/metric_bolts_and_nuts.scad>
+include <threadlib/threadlib.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
 $fa = 5;
 // $fs is the minimum size of a fragment. If high, causes
@@ -27,12 +28,12 @@ lean_angle = 30;
 
 page_clip_material_thickness = 7;
 
-page_clip_u_bar_length = 20;
+page_clip_u_bar_length = 30;
 page_clip_u_bar_tip_r = page_clip_material_thickness/2/2;
 
 page_clip_width = 10;
 page_clip_depth = book_base_support_d/2 + page_clip_u_bar_length;
-page_clip_height = 1.5*book_base_support_d;
+page_clip_height = 1.0*book_base_support_d;
 page_clip_height_firstpart = 1/8*page_clip_height;
 page_clip_clearance = 1;
 page_clip_grab_extension = 5;
@@ -472,11 +473,33 @@ module holder ()
           }
       }
     }
+    // Cut out planes
     planes_cutout();
 
+    // cut out everything below z=0
     mirror([0,0,1])
       translate([-500,-500,0])
       cube([1000,1000,1000]);
+
+    // cut out several 1/4 inch camera threads for optional tripod mounting
+    for (xoff = [-15,0,15])
+    {
+      for (yoff = [-10:10:30])
+      {
+        translate([xoff,yoff,0])
+        {
+          // elephant's foot compensation:
+          translate([0,0,-0.01])
+          {
+            cylinder(r1=4,r2=3,h=1);
+          }
+          if (!$preview)
+          {
+            tap("UNC-1/4", turns=3);
+          }
+        }
+      }
+    }
   }
 }
 
