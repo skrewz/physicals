@@ -1,7 +1,7 @@
 // Use partname to control which object is being rendered:
 //
 // _partname_values inside outside
-partname = "outside";
+partname = "display";
 
 include <libs/compass.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
@@ -14,6 +14,9 @@ $fs = $preview ? 2 : 0.5;
 //
 // The height of the contained cylinder:
 inner_height = 105.8+2; // 105.8 on caliper
+
+// The amount of inner_height to actually thread (to not have to turn excessively)
+thread_height = 20;
 // The radius of the contained cylinder:
 inner_radius = (32.0+1.0)/2; // 32.0 on caliper
 // Basic wall width:
@@ -74,7 +77,9 @@ module inside ()
     union()
     {
       translate([0,0,grip_height])
-        thread(inner_height+wall_w-grip_height,inner_radius,wall_w,used_inner_indent,used_indent_height);
+        thread(thread_height+wall_w-grip_height,inner_radius,wall_w,used_inner_indent,used_indent_height);
+      translate([0,0,grip_height])
+        cylinder(h=inner_height+wall_w-grip_height,r=inner_radius+wall_w,$fa=2);
       // Using mirroring to better allow knurling to line up when closed (YMMV,
       // though):
       translate([0,0,grip_height])
@@ -91,6 +96,7 @@ module outside ()
 {
   module rounded_outside ()
   {
+  #
     cylinder(
       r=outer_radius_total,
       h=inner_height+wall_w,
@@ -147,7 +153,7 @@ module outside ()
 //   parts put together.
 if ("display" == partname)
 {
-  translate([0,0,0.1*inner_height])
+  translate([0,0,1.5*inner_height])
     outside();
   inside();
 } else if ("outside" == partname)
