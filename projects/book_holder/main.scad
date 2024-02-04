@@ -14,7 +14,10 @@ $fs = 0.5;
 
 wall_w = 5;
 
+// this controls how big the "wings" that support the book will be:
 book_side_support_wh = [85,130];
+
+// this controls how deep (say, in the way of page count) the support will be:
 book_base_support_d = 35;
 book_base_rim_cutout_d = 10;
 book_base_rim_cutout_r = 20;
