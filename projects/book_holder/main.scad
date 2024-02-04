@@ -23,7 +23,7 @@ book_base_rim_cutout_d = 10;
 book_base_rim_cutout_r = 20;
 
 // this controls the size of the platform the holder rests on:
-book_platform_scale_parameters = [6.0,4.5,0.9];
+book_platform_scale_parameters = [8.0,7.0,0.9];
 
 // Controls the handles' length and angle:
 handle_length = 70;
@@ -33,7 +33,7 @@ handle_downward_angle = 30;
 //   these upwards to have enough space for the handles, ergonomically.
 // - For large holders, these can be moved down to get closer to center-of-mass
 //   for a book and less support needed to reach their starting points.
-handle_placement_factors_hv = [0.4,0.85];
+handle_placement_factors_hv = [0.7,0.85];
 // this controls whether handles will be placed left and/or right. Unless
 // saving filament or otherwise, generally a not a bad idea to use both.
 //
@@ -50,7 +50,7 @@ page_clip_u_bar_tip_r = page_clip_material_thickness/2/2;
 
 page_clip_width = 10;
 page_clip_depth = book_base_support_d/2 + page_clip_u_bar_length;
-page_clip_height = 1.0*book_base_support_d;
+page_clip_height = 1.5*book_base_support_d;
 page_clip_height_firstpart = 1/8*page_clip_height;
 page_clip_clearance = 1;
 page_clip_grab_extension = 5;
