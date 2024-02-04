@@ -209,8 +209,6 @@ module planes()
   }
 }
 
-//big_book();
-
 module round_cylinder(r, h)
 {
   translate([0,0,r])
@@ -530,6 +528,9 @@ module holder ()
 if ("display" == partname)
 {
   holder();
+
+  big_book();
+
   rotate([-lean_angle,0,0])
   {
     translate([0,-book_base_support_d,0])
