@@ -5,7 +5,7 @@ partname = "display";
 
 include <libs/compass.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
-$fa = 12;
+$fa = $preview ? 12 : 4;
 // $fs is the minimum size of a fragment. If high, causes
 // fewer-than-$fa-would-indicate surfaces. Minimum is 0.01.
 $fs = $preview ? 2 : 0.5;
