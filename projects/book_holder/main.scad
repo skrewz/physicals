@@ -357,7 +357,6 @@ module u_shape_page_clip()
       // The bar
       translate([0,(page_clip_height_firstpart+1*page_clip_pivot_axle_clearance),page_clip_depth])
       {
-        compass();
         u_shape_page_bar();
       }
     }
