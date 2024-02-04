@@ -11,10 +11,23 @@ $fa = $preview ? 12 : 4;
 $fs = $preview ? 2 : 0.5;
 
 wall_w = 2;
-// outer radius here:
-attachment_rh = [15.75,35];
+
 hose_cutout_r = 43/2;
 hose_attachment_rh = [hose_cutout_r+wall_w,40];
+
+// hose_attachment_off_centre_factor controls how the attachment and hose radii
+// correspond:
+//
+// - To centre (i.e. make coaxial), use 0
+// - To place such that circumferences overlap, use 1
+
+// outer radius here:
+//attachment_rh = [62/2,2*wall_w];
+//attachment_inner_r = hose_attachment_rh[0];
+//hose_attachment_off_centre_factor = 0;
+attachment_rh = [15.75,35];
+attachment_inner_r = 15.75;
+hose_attachment_off_centre_factor = 1;
 
 cable_tie_cutout_w = 3.5;
 cable_tie_indent = 4;
@@ -26,8 +39,8 @@ module attachment()
   {
     union()
     {
-      cylinder(r=hose_attachment_rh[0],h=hose_attachment_rh[1]);
-      translate([-(hose_attachment_rh[0]-attachment_rh[0]),0,hose_attachment_rh[1]])
+      cylinder(r=hose_attachment_rh[0],h=hose_attachment_rh[1]+2*wall_w);
+      translate([-hose_attachment_off_centre_factor*(hose_attachment_rh[0]-attachment_rh[0]),0,hose_attachment_rh[1]])
       {
         cylinder(r=attachment_rh[0],h=attachment_rh[1]);
       }
@@ -36,11 +49,17 @@ module attachment()
     {
       translate([0,0,-0.01])
       {
+        // a hose stopper; this allows the cable ties to hold down the elastic
+        // nature of a hose
+        translate([0,0,hose_attachment_rh[1]-wall_w])
+        {
+          cylinder(r=hose_attachment_rh[0]-wall_w-wall_w,h=wall_w+0.02);
+        }
         cylinder(r=hose_attachment_rh[0]-wall_w,h=hose_attachment_rh[1]-wall_w+0.02);
       }
-      translate([-(hose_attachment_rh[0]-attachment_rh[0]),0,hose_attachment_rh[1]-wall_w-0.01])
+      translate([-hose_attachment_off_centre_factor*(hose_attachment_rh[0]-attachment_inner_r),0,hose_attachment_rh[1]-0.01])
       {
-        cylinder(r=attachment_rh[0]-wall_w,h=attachment_rh[1]+wall_w+0.02);
+        cylinder(r=attachment_inner_r-wall_w,h=attachment_rh[1]+wall_w+0.02);
       }
       // Cutouts to mount a cable tie onto the hose through:
       for (rot = [0,180])
