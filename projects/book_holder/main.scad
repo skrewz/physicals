@@ -12,16 +12,30 @@ $fa = 5;
 // fewer-than-$fa-would-indicate surfaces. Minimum is 0.01.
 $fs = 0.5;
 
-// $fa = 10;
-// $fs = 1;
 wall_w = 5;
-handle_length = 70;
-handle_downward_angle = 30;
 
 book_side_support_wh = [85,130];
 book_base_support_d = 35;
 book_base_rim_cutout_d = 10;
 book_base_rim_cutout_r = 20;
+
+// this controls the size of the platform the holder rests on:
+book_platform_scale_parameters = [6.0,4.5,0.9];
+
+// Controls the handles' length and angle:
+handle_length = 70;
+handle_downward_angle = 30;
+// these control where on the wings that the handles will be placed. Numbers between 0 and 1:
+// - For small (book_side_support_wh-wise) holders, you may want to adjust
+//   these upwards to have enough space for the handles, ergonomically.
+// - For large holders, these can be moved down to get closer to center-of-mass
+//   for a book and less support needed to reach their starting points.
+handle_placement_factors_hv = [0.4,0.85];
+// this controls whether handles will be placed left and/or right. Unless
+// saving filament or otherwise, generally a not a bad idea to use both.
+//
+// [0,1] means both sides, [0] is right only, [1] is left only.
+handle_mirrors = [0,1];
 
 opening_angle = 120;
 lean_angle = 30;
@@ -365,13 +379,13 @@ module holder ()
       // Place handles
       rotate([-lean_angle,0,0])
       {
-        for(m = [0,1])
+        for(m = handle_mirrors)
         {
           mirror([m,0,0])
           {
             rotate([0,0,opening_angle/2])
             {
-              translate([0,-0.4*book_side_support_wh[0],0.85*book_side_support_wh[1]])
+              translate([0,-handle_placement_factors_hv[0]*book_side_support_wh[0],handle_placement_factors_hv[1]*book_side_support_wh[1]])
               rotate([0,90,0])
               rotate([0,handle_downward_angle,0])
               handle();
@@ -460,11 +474,12 @@ module holder ()
       translate([0,sin(lean_angle)*book_base_support_d,0])
       {
         translate([0,-4,1])
-          scale([2.0,1.5,0.3])
+          scale(book_platform_scale_parameters)
           {
-            sphere(r=30);
+            sphere(r=10);
           }
 
+        // this _barely_ needs to be scaled with book_platform_scale_parameters; leaving as is
         translate([0,0,0])
             rotate([-0.5*lean_angle,0,0])
           scale([0.2,0.2,3])
@@ -482,9 +497,9 @@ module holder ()
       cube([1000,1000,1000]);
 
     // cut out several 1/4 inch camera threads for optional tripod mounting
-    for (xoff = [-15,0,15])
+    for (xoff = [-book_platform_scale_parameters[0]*3,0,book_platform_scale_parameters[0]*3])
     {
-      for (yoff = [-10:10:30])
+      for (yoff = [-book_platform_scale_parameters[1]*2:2*book_platform_scale_parameters[1]:3*book_platform_scale_parameters[1]*2])
       {
         translate([xoff,yoff,0])
         {
