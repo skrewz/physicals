@@ -1,6 +1,6 @@
 // Use partname to control which object is being rendered:
 //
-// _partname_values left_f_shape left_f_upper right_f_shape right_f_upper middle_t_shape middle_t_upper wall_clasp top_blocker tightening_clasp
+// _partname_values left_f_shape left_f_upper right_f_shape right_f_upper middle_t_shape middle_t_upper wall_clasp top_blocker tightening_clasp drilled_clasp
 partname = "display";
 
 include <libs/compass.scad>
@@ -685,6 +685,54 @@ module tightening_clasp()
   }
 }
 
+module drilled_clasp()
+{
+  difference()
+  {
+    union()
+    {
+      cylinder(r=support_beam_r+wall_w,h=(2+2)*support_beam_holder_height);
+      /*
+      translate([-(support_beam_r+wall_w),-(support_beam_r+wall_w),0])
+      {
+        cube([2*(support_beam_r+wall_w),2*(support_beam_r+wall_w),sin(45)*(2+2)*(support_beam_holder_height+wall_w)]);
+      }
+      */
+    }
+    union()
+    {
+      translate([0,0,-0.01])
+      {
+        cylinder(r=support_beam_r,h=(2+2)*support_beam_holder_height+0.02);
+        translate([-(support_beam_r+wall_w)-0.01, -(support_beam_r+wall_w), 2*support_beam_holder_height])
+        {
+          rotate([-45,0,0])
+          {
+            mirror([0,1,0])
+            {
+              cube([2*(support_beam_r+wall_w)+0.02, 2*(support_beam_r+wall_w), 2*2*(support_beam_r+wall_w)]);
+            }
+          }
+        }
+        translate([-(support_beam_r+wall_w)-0.01,-(3*(support_beam_r+wall_w)-1.1*wall_w),0])
+        {
+          cube([2*(support_beam_r+wall_w)+0.02, 2*(support_beam_r+wall_w), 2*2*(support_beam_r+wall_w)]);
+        }
+      }
+      for (zoff = [0.3*support_beam_holder_height,0.8*support_beam_holder_height,1.3*support_beam_holder_height,1.8*support_beam_holder_height])
+      {
+        translate([-(support_beam_r+wall_w)-0.01,0,zoff])
+        {
+          rotate([0,90,0])
+          {
+            cylinder(r=m3_radius_for_cutaway,h=2*(support_beam_r+wall_w)+0.02,$fs=0.7);
+          }
+        }
+      }
+    }
+  }
+}
+
 // Conventions:
 // * When an object is rendered using partname, position/rotate it according to
 //   printing suggestion, here. (The module itself will be positioned/rotated
@@ -699,6 +747,11 @@ if ("display" == partname)
   translate([wall_clasp_wh[0]/2,wall_clasp_offset,2+support_beam_holder_height])
   {
     tightening_clasp();
+  }
+
+  translate([wall_clasp_wh[0]/2,wall_clasp_offset,2+4*support_beam_holder_height])
+  {
+    drilled_clasp();
   }
 
   translate([0,0,1.1*segment_length])
@@ -753,11 +806,17 @@ if ("display" == partname)
   right_f_upper();
 } else if ("wall_clasp" == partname)
 {
-  wall_clasp();
+  rotate([90,0,0])
+  {
+    wall_clasp();
+  }
 } else if ("top_blocker" == partname)
 {
   top_blocker();
 } else if ("tightening_clasp" == partname)
 {
   tightening_clasp();
+} else if ("drilled_clasp" == partname)
+{
+  drilled_clasp();
 }
