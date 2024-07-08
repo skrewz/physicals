@@ -5,23 +5,27 @@ partname = "display";
 
 include <libs/compass.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
-$fa = 12;
+$fa = $preview ? 12 : 4;
 // $fs is the minimum size of a fragment. If high, causes
 // fewer-than-$fa-would-indicate surfaces. Minimum is 0.01.
-$fs = 0.5;
+$fs = $preview ? 2 : 0.5;
 
+scale_cutout = 21;
+wall_w = 5;
+
+holder_wh = [30,90];
 
 module holder()
 {
   difference()
   {
-    cube([20,25,70]);
+    cube([holder_wh[0],scale_cutout+2*wall_w,holder_wh[1]]);
     hull()
     {
-      for(zoff = [10,70])
-        translate([-10,12.5,zoff])
+      for(zoff = [scale_cutout/2+wall_w,holder_wh[1]])
+        translate([-wall_w,wall_w+scale_cutout/2,zoff])
         rotate([0,90,0])
-        cylinder(r=6,h=50);
+        cylinder(r=scale_cutout/2,h=2*wall_w+holder_wh[0]);
     }
   }
 }
