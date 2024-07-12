@@ -449,15 +449,23 @@ module holder ()
       {
         translate([0,-book_base_support_d-clip_elastic_offset,0])
         {
-          for (coord = [
-            [-clip_elastic_spread/2,0,0],
-            [clip_elastic_spread/2,0,0],
+          for (tup = [
+            [-clip_elastic_spread/2,0,0,1],
+            [clip_elastic_spread/2,0,0,-1],
           ]){
-            translate(coord)
+            translate([tup[0],tup[1],tup[2]])
             {
               translate([0,0,-wall_w])
               {
-                cylinder(r1=wall_w,r2=wall_w/2,h=wall_w);
+                hull()
+                {
+                  cylinder(r1=wall_w,r2=wall_w/2,h=wall_w);
+                  translate([tup[3]*clip_elastic_offset,book_base_support_d/2,wall_w])
+                  {
+                    cylinder(r=wall_w/2,h=wall_w);
+                  }
+                  compass();
+                }
               }
             }
           }
