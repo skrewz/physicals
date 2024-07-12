@@ -48,7 +48,7 @@ page_clip_material_thickness = 7;
 page_clip_u_bar_length = 30;
 page_clip_u_bar_tip_r = page_clip_material_thickness/2/2;
 
-page_clip_width = 10;
+page_clip_width = page_clip_material_thickness;
 page_clip_depth = book_base_support_d/2 + page_clip_u_bar_length;
 page_clip_height = 1.5*book_base_support_d;
 page_clip_height_firstpart = 1/8*page_clip_height;
@@ -222,7 +222,7 @@ module round_cylinder(r, h)
   }
 }
 
-module u_shape_page_clip()
+module u_shape_page_clip(angle=90)
 {
   page_clip_triangle_scale = 2;
   page_clip_pivot_axle_r = 1.5;
@@ -234,50 +234,53 @@ module u_shape_page_clip()
 
       difference()
       {
-        union()
+        rotate([0,angle,0])
         {
           union()
           {
-            // main spar across
-            hull()
+            union()
             {
-              for(coord = [
-                [-page_clip_triangle_scale*page_clip_bar_width,0],
-                [page_clip_triangle_scale*page_clip_bar_width,0],
-              ]) {
-                translate(coord)
-                {
-                  sphere(r=page_clip_material_thickness/2);
-                }
-              }
-            }
-
-            // outriggers toward page
-            for(coord = [
-              [-page_clip_triangle_scale*page_clip_bar_width,0,0],
-              [page_clip_triangle_scale*page_clip_bar_width,0,0],
-            ]) {
-              // upward extension to page_clip_height
+              // main spar across
               hull()
               {
-                translate(coord)
-                {
-                  sphere(r=page_clip_material_thickness/2);
-                  translate([0,page_clip_height-page_clip_height_firstpart,0])
+                for(coord = [
+                  [-page_clip_triangle_scale*page_clip_bar_width,0],
+                  [page_clip_triangle_scale*page_clip_bar_width,0],
+                ]) {
+                  translate(coord)
                   {
                     sphere(r=page_clip_material_thickness/2);
                   }
                 }
               }
-              // the cone-shaped page holders
-              hull()
-              {
-                translate(coord+[0,page_clip_height-page_clip_height_firstpart,0])
+
+              // outriggers toward page
+              for(coord = [
+                [-page_clip_triangle_scale*page_clip_bar_width,0,0],
+                [page_clip_triangle_scale*page_clip_bar_width,0,0],
+              ]) {
+                // upward extension to page_clip_height
+                hull()
                 {
-                  sphere(r=page_clip_material_thickness/2);
-                  translate([0,0,-page_clip_u_bar_length])
+                  translate(coord)
                   {
-                    sphere(r=page_clip_u_bar_tip_r);
+                    sphere(r=page_clip_material_thickness/2);
+                    translate([0,page_clip_height-page_clip_height_firstpart,0])
+                    {
+                      sphere(r=page_clip_material_thickness/2);
+                    }
+                  }
+                }
+                // the cone-shaped page holders
+                hull()
+                {
+                  translate(coord+[0,page_clip_height-page_clip_height_firstpart,0])
+                  {
+                    sphere(r=page_clip_material_thickness/2);
+                    translate([0,0,-page_clip_u_bar_length])
+                    {
+                      sphere(r=page_clip_u_bar_tip_r);
+                    }
                   }
                 }
               }
@@ -300,14 +303,14 @@ module u_shape_page_clip()
     {
       hull()
       {
-        translate([-page_clip_width/2,0,0])
+        translate([-page_clip_width/2,-page_clip_pivot_axle_clearance,0])
         {
           rotate([0,90,0])
           {
             cylinder(r=page_clip_material_thickness/2, h=page_clip_width);
           }
         }
-        translate([0,0,page_clip_depth])
+        translate([0,-page_clip_pivot_axle_clearance,page_clip_depth])
         {
           sphere(r=page_clip_material_thickness/2);
         }
@@ -328,11 +331,11 @@ module u_shape_page_clip()
         }
       }
       // Pivot axle:
-      translate([0,(page_clip_height_firstpart-page_clip_material_thickness/2),page_clip_depth])
+      translate([0,(page_clip_height_firstpart-page_clip_material_thickness/2-page_clip_pivot_axle_clearance),page_clip_depth])
       {
         rotate([-90,0,0])
         {
-          cylinder(r=page_clip_pivot_axle_r,h=page_clip_material_thickness+2*page_clip_pivot_axle_clearance);
+          cylinder(r=page_clip_pivot_axle_r,h=page_clip_material_thickness+(2+1)*page_clip_pivot_axle_clearance);
         }
       }
 
@@ -358,7 +361,7 @@ module u_shape_page_clip()
         u_shape_page_bar();
       }
     }
-    translate([-page_clip_width/2-0.01,0,0])
+    translate([-page_clip_width/2-0.01,-page_clip_pivot_axle_clearance,0])
     {
       rotate([0,90,0])
       {
@@ -423,7 +426,7 @@ module holder ()
                 {
                   cylinder(r=clip_holder_pivot_axle_r, h=clip_holder_width+0.02);
                 }
-                translate([0,0,page_clip_width/2])
+                translate([0,0,clip_holder_width/2-(page_clip_width+2*page_clip_clearance)/2])
                 {
                   hull()
                   {
@@ -547,7 +550,7 @@ if ("display" == partname)
       {
         rotate([90+20,0,0])
         {
-          u_shape_page_clip();
+          u_shape_page_clip(0);
         }
       }
     }
@@ -557,8 +560,8 @@ if ("display" == partname)
   holder();
 } else if ("u_shape_page_clip" == partname)
 {
-  rotate([180,0,0])
+  rotate([0,90,0])
   {
-    u_shape_page_clip();
+    u_shape_page_clip(90);
   }
 }
