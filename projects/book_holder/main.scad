@@ -467,7 +467,6 @@ module holder ()
                   {
                     cylinder(r=wall_w/2,h=wall_w);
                   }
-                  compass();
                 }
               }
             }
@@ -487,7 +486,7 @@ module holder ()
         translate([0,-4,1])
           scale(book_platform_scale_parameters)
           {
-            sphere(r=10);
+            sphere(r=10,$fa=2);
           }
 
         // this _barely_ needs to be scaled with book_platform_scale_parameters; leaving as is
