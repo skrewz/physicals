@@ -20,9 +20,9 @@ inner_r = 65/2;
 
 // This controls how long the spiral will be, how many veins the spiral will
 // have and how many twists (1==a complete rotation) it'll undergo:
-funnel_depth = 70;
-num_veins = 3;
-twists = 0.4;
+funnel_depth = 120;
+num_veins = 2;
+twists = 0.6;
 
 
 wall_w = 2;
@@ -66,6 +66,10 @@ module spiral()
           scale([2,0.7,0])
           {
             circle(r=10);
+          }
+          translate([20-2,-2,0])
+          {
+            circle(r=2,$fn=10);
           }
         }
       }
