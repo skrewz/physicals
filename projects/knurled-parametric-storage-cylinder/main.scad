@@ -13,14 +13,16 @@ $fs = $preview ? 2 : 0.5;
 // Main parameters to tune:
 //
 // The height of the contained cylinder:
-inner_height = 105.8+2; // 105.8 on caliper
+inner_height = 10.0 + 2; // 105.8 on caliper
 
 // The amount of inner_height to actually thread (to not have to turn excessively)
-thread_height = 20;
+thread_height = 6;
 // The radius of the contained cylinder:
-inner_radius = (32.0+1.0)/2; // 32.0 on caliper
+inner_radius = (78.0+1.0)/2; // 32.0 on caliper
 // Basic wall width:
 wall_w = 2;
+// The height of the inside part's grip:
+grip_height = 2;
 
 // Whether to cause holes in the outside() and/or inside():
 punch_holes_oi = [true, true];
@@ -31,7 +33,7 @@ punch_holes_oi = [true, true];
 used_indent_height = 6;
 
 // The indent of the thread. Make greater to get deeper grooves:
-used_inner_indent = inner_radius / 16;
+used_inner_indent = inner_radius / 32;
 
 // The outside thread radius is a bit larger
 outer_inner_radius = inner_radius + used_indent_height/3;
@@ -45,6 +47,10 @@ outer_radius_total = outer_inner_radius+
       used_inner_indent+
       used_outer_indent+wall_w;
 
+rounded_grip_extra_height = outer_radius_total/10;
+
+
+assert(inner_height > rounded_grip_extra_height/2 + grip_height + thread_height);
 
 module knurled_cylinder(r,h)
 {
@@ -52,8 +58,8 @@ module knurled_cylinder(r,h)
   {
     cylinder(r=r,h=h);
     for (prefix = [1,-1])
-      for(i=[0:29])
-        rotate([0,0,i*12])
+      for(i=[0:59])
+        rotate([0,0,i*6])
           linear_extrude(height=h+0.1,twist=prefix*120*(h/45))
             translate([r,0])
               circle(r=0.8,$fn=8);
@@ -96,15 +102,33 @@ module inside ()
   {
     union()
     {
-      translate([0,0,grip_height])
-        thread(thread_height+wall_w-grip_height,inner_radius,wall_w,used_inner_indent,used_indent_height);
-      translate([0,0,grip_height])
-        cylinder(h=inner_height+wall_w-grip_height,r=inner_radius+wall_w,$fa=2);
-      // Using mirroring to better allow knurling to line up when closed (YMMV,
-      // though):
-      translate([0,0,grip_height])
-        mirror([0,0,1])
-          knurled_cylinder(r=outer_radius_total,h=grip_height,$fn=60);
+      intersection()
+      {
+        union()
+        {
+          translate([0,0,rounded_grip_extra_height])
+          {
+            cylinder(r=outer_radius_total,h=rounded_grip_extra_height+grip_height,$fn=60);
+            hull()
+            {
+              rotate_extrude(angle=360,convexity=60) {
+                translate([outer_radius_total-rounded_grip_extra_height,0,0])
+                  circle(r=rounded_grip_extra_height, $fs=$preview ? 1 : 0.5);
+              }
+            }
+          }
+        }
+        // Using mirroring to better allow knurling to line up when closed (YMMV,
+        // though):
+        translate([0,0,grip_height+rounded_grip_extra_height])
+          mirror([0,0,1])
+            knurled_cylinder(r=outer_radius_total,h=grip_height+rounded_grip_extra_height,$fn=60);
+      }
+      translate([0,0,grip_height+rounded_grip_extra_height])
+        thread(thread_height,inner_radius,wall_w,used_inner_indent,used_indent_height);
+
+      translate([0,0,wall_w])
+        cylinder(h=inner_height,r=inner_radius+wall_w,$fa=2);
     }
     translate([0,0,wall_w])
       cylinder(r=inner_radius,h=inner_height+0.01,$fn=60);
@@ -120,7 +144,6 @@ module outside ()
 {
   module rounded_outside ()
   {
-  #
     cylinder(
       r=outer_radius_total,
       h=inner_height+wall_w,
@@ -130,27 +153,25 @@ module outside ()
   }
   module knurled_outside ()
   {
-    extra_height = outer_radius_total/5;
-
     intersection()
     {
       union()
       {
-        cylinder(r=outer_radius_total, h=inner_height+wall_w, $fn=60);
-        translate([0,0,inner_height+wall_w])
+        cylinder(r=outer_radius_total, h=inner_height+wall_w-rounded_grip_extra_height, $fs=$preview ? 5 : 1);
+        translate([0,0,inner_height+wall_w-rounded_grip_extra_height])
         {
           hull()
           {
             rotate_extrude(angle=360,convexity=60) {
-              translate([outer_radius_total-extra_height,0,0])
-                circle(r=extra_height);
+              translate([outer_radius_total-rounded_grip_extra_height,0,0])
+                circle(r=rounded_grip_extra_height, $fs=$preview ? 1 : 0.5);
             }
           }
         }
       }
       knurled_cylinder(
         r=outer_radius_total,
-        h=inner_height+wall_w+extra_height,
+        h=inner_height+wall_w+rounded_grip_extra_height,
         $fn=60);
     }
   }
@@ -185,12 +206,13 @@ module outside ()
 //   parts put together.
 if ("display" == partname)
 {
-  translate([0,0,1.5*inner_height])
+  translate([0,0,max(1.5*inner_height,50)])
     outside();
   inside();
 } else if ("outside" == partname)
 {
-  outside();
+  rotate([0,180,0])
+    outside();
 } else if ("inside" == partname)
 {
   inside();
