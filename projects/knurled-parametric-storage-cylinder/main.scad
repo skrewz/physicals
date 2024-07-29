@@ -34,7 +34,7 @@ used_indent_height = 6;
 used_inner_indent = inner_radius / 16;
 
 // The outside thread radius is a bit larger
-outer_inner_radius = 1.05*inner_radius;
+outer_inner_radius = inner_radius + used_indent_height/3;
 // The outer indent is ever so sligthly larger:
 used_outer_indent = used_inner_indent + 0.5;
 
