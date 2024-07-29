@@ -21,8 +21,9 @@ thread_height = 20;
 inner_radius = (32.0+1.0)/2; // 32.0 on caliper
 // Basic wall width:
 wall_w = 2;
-// The height of the inside part's grip:
-grip_height = 10;
+
+// Whether to cause holes in the outside() and/or inside():
+punch_holes_oi = [true, true];
 
 // Parameters that are derived or somewhat tweakable:
 
@@ -88,6 +89,10 @@ module inside ()
     }
     translate([0,0,wall_w])
       cylinder(r=inner_radius,h=inner_height+0.01,$fn=60);
+    if (punch_holes_oi[1])
+    {
+      hole_punch_pattern();
+    }
   }
 }
 
@@ -141,6 +146,14 @@ module outside ()
         wall_w,
         used_outer_indent,
         used_indent_height);
+
+    if (punch_holes_oi[0])
+    {
+      translate([0,0,inner_height])
+      {
+        hole_punch_pattern();
+      }
+    }
   }
 }
 
