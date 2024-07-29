@@ -60,6 +60,25 @@ module knurled_cylinder(r,h)
   }
 }
 
+module hole_punch_pattern ()
+{
+  hole_punch_r = 1.5;
+  num_holes = inner_radius / (3*hole_punch_r) - inner_radius % (3*hole_punch_r);
+
+  for (j = [0:5])
+  {
+    for (i = [0:num_holes+1])
+    {
+      rotate([0,0,i*20+j*60])
+      {
+        translate([i * 3*hole_punch_r,0,-0.01])
+        {
+          cylinder(r=hole_punch_r, h=wall_w+0.02,$fs=$preview ? 1 : 0.5);
+        }
+      }
+    }
+  }
+}
 
 module thread(h,inner_r,wall_width,indent,indent_height)
 {
