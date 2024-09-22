@@ -5,7 +5,7 @@ partname = "display";
 
 include <libs/compass.scad>
 // $fa is the minimum angle for a fragment. Minimum value is 0.01.
-$fa = 12;
+$fa = $preview ? 12 : 4 ;
 // $fs is the minimum size of a fragment. If high, causes
 // fewer-than-$fa-would-indicate surfaces. Minimum is 0.01.
 $fs = $preview ? 2 : 0.5;
@@ -18,7 +18,7 @@ inner_height = 10.0 + 2; // 105.8 on caliper
 // The amount of inner_height to actually thread (to not have to turn excessively)
 thread_height = 6;
 // The radius of the contained cylinder:
-inner_radius = (78.0+1.0)/2; // 32.0 on caliper
+inner_radius = (77.0+1.0)/2; // 32.0 on caliper
 // Basic wall width:
 wall_w = 2;
 // The height of the inside part's grip:
@@ -69,11 +69,11 @@ module knurled_cylinder(r,h)
 module hole_punch_pattern ()
 {
   hole_punch_r = 1.5;
-  num_holes = inner_radius / (3*hole_punch_r) - inner_radius % (3*hole_punch_r);
+  num_holes = (inner_radius-hole_punch_r) / (3*hole_punch_r);
 
   for (j = [0:5])
   {
-    for (i = [0:num_holes+1])
+    for (i = [1:num_holes+1-1])
     {
       rotate([0,0,i*20+j*60])
       {
