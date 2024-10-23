@@ -12,14 +12,21 @@ $fa = $preview ? 12 : 4;
 $fs = $preview ? 1 : 0.5;
 
 
-probemount_r = 10;
+probemount_r = 8;
+probemount_inner_r = 7;
 probemount_outer_h = 47;
 
 
 cable_exit_height = 4;
 
 max_expected_flatpiece_rotation_travel = 5;
+
+flatpiece_wdh = [5,1,15];
+flatpiece_rot_minmax = [-90,-90-max_expected_flatpiece_rotation_travel];
+
+max_tool_diam_clearing = 6/2+flatpiece_wdh[1]+3;
 tool_path_clearance_r = (6+6)/2;
+
 
 wall_w = 2;
 m6_cutout_r = 3.05;
@@ -31,9 +38,7 @@ spring_free_rotation_clearing_r = 4.5;
 
 rotation_pin_cutout_r = 0.8;
 rotation_pin_height = probemount_outer_h-1.5*rotation_pin_cutout_r;
-rotation_pin_horiz_offset = 0.6*probemount_r;
-flatpiece_wdh = [5,1,15];
-flatpiece_rot_minmax = [-90,-90-max_expected_flatpiece_rotation_travel];
+rotation_pin_horiz_offset = max(0.6*probemount_r,max_tool_diam_clearing);
 
 springmount_radius = 7;
 springmount_extension = 17;
@@ -57,13 +62,13 @@ module probemount()
       }
       translate([0,0,wall_w])
       {
-        cylinder(r=probemount_r-wall_w, h=probemount_outer_h-flatpiece_wdh[2]);
+        cylinder(r=probemount_inner_r, h=probemount_outer_h-flatpiece_wdh[2]);
       }
       translate([0,0,wall_w])
       {
         cylinder(r=tool_path_clearance_r, h=probemount_outer_h+0.02);
       }
-      translate([-1.7*probemount_r,-probemount_r,wall_w])
+      translate([-1.6*probemount_r,-probemount_r,wall_w])
       {
         cube([2*probemount_r,2*probemount_r,probemount_outer_h]);
       }
@@ -74,9 +79,12 @@ module probemount()
       cylinder(r=m6_cutout_r, h=wall_w+0.02, $fs=0.05);
     }
     // Cutout for swiwel space for the flatpiece
-    translate([-0.01,-(probemount_r-2*wall_w)/2,probemount_outer_h-flatpiece_wdh[2]-2*wall_w])
+    translate([rotation_pin_horiz_offset+3*flatpiece_wdh[1],-(1.2*flatpiece_wdh[0])/2,probemount_outer_h-flatpiece_wdh[2]-2*wall_w])
     {
-      cube([probemount_r,probemount_r-2*wall_w,probemount_outer_h-2*wall_w]);
+      mirror([1,0,0])
+      {
+        cube([probemount_r,1.2*flatpiece_wdh[0],probemount_outer_h-2*wall_w]);
+      }
     }
     // Cutout for cable exit for fixed nut
     translate([-0.01,-(probemount_r-2*wall_w)/2,wall_w])
