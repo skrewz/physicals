@@ -10,7 +10,7 @@ $fa = $preview ? 6 : 1;
 // fewer-than-$fa-would-indicate surfaces. Minimum is 0.01.
 $fs = $preview ? 2 : 0.5;
 
-lower_arc_lean_angle = 6;
+lower_arc_lean_angle = 8;
 lower_arc_height = 20;
 
 bolt_head_clearing_rh = [3,3];
@@ -32,6 +32,7 @@ mount_hole_angles = [-10.7,0,10.7];
 upper_arc_displacement = [-90,0,220];
 
 
+arm_width = 50;
 arm_vertical_resolution = $preview ? 15 : 4;
 
 // This produces the xyz and rotation coordinates for a given height of the arm:
@@ -43,7 +44,7 @@ function arm_xyza_for_height (h, linear_offset) =
     h/(upper_arc_displacement[2]-0)*-(90+upper_arc_lean_angle)
   ];
 
-module arm(linear_offset=0.7,arm_height=upper_arc_displacement[2])
+module arm(linear_offset=0.7,arm_height=upper_arc_displacement[2],w_w=2*lower_arc_wall_w)
 {
   module segment_at(h)
   {
@@ -52,7 +53,10 @@ module arm(linear_offset=0.7,arm_height=upper_arc_displacement[2])
     {
       rotate([0,coord[3],0])
       {
-        stretch_arc(0.01, lean_angle=lower_arc_lean_angle, w_w=2*lower_arc_wall_w);
+        translate([0,-arm_width/2,0])
+        {
+          cube([w_w, arm_width, 0.01]);
+        }
       }
     }
   }
@@ -106,7 +110,27 @@ module headrest()
   {
     union()
     {
-      arm(0.0,lower_arc_height);
+      // Adding a support brace
+      translate([0,-arm_width/2,lower_arc_height])
+      {
+        hull()
+        {
+          for (coord = [
+              [lower_arc_wall_w/2,0,-lower_arc_height+1.0],
+              [0,0,0],
+              [2*lower_arc_wall_w,0,0],
+              [4*lower_arc_wall_w,0,40],
+              ]) {
+            translate(coord)
+            {
+              rotate([-90,0,0])
+              {
+                cylinder(r=0.1,h=arm_width);
+              }
+            }
+          }
+        }
+      }
       lower_arc();
       arm();
 
@@ -136,7 +160,7 @@ module stretch_arc(h, lean_angle=lower_arc_lean_angle, w_w=wall_w)
 {
   translate([-lower_arc_ir,0,0])
   {
-    arc_of_circle(lower_arc_ir,lower_arc_ir+w_w,h,2,lean_angle);
+    arc_of_circle(lower_arc_ir,lower_arc_ir+w_w,h,3,lean_angle);
   }
 }
 
