@@ -17,10 +17,11 @@ $fs = $preview ? 2 : 0.5;
 //
 outer_r = 85/2;
 inner_r = 65/2;
-inner_r_upper = 0.75*inner_r;
+inner_r_upper = 0.5*inner_r;
 
 // This controls how long the funnel will be
-funnel_max_depth = 120;
+funnel_max_depth = 90;
+funnel_offset = 10;
 
 
 wall_w = 2;
@@ -57,7 +58,7 @@ module funnel()
     hull()
     {
       cylinder(r1=lower_r, r2=upper_r, h=0.01);
-      translate([upper_r,0,height])
+      translate([upper_r+funnel_offset,0,height])
       {
         intersection()
         {
@@ -91,7 +92,7 @@ module funnel()
       translate([0,0,0.5*wall_w])
       {
         combiner(inner_r, inner_r_upper, combiner_depth);
-        translate([inner_r_upper,0,combiner_depth])
+        translate([inner_r_upper+funnel_offset,0,combiner_depth])
         {
           cup(inner_r_upper);
         }
@@ -116,6 +117,21 @@ module funnel()
 //   parts put together.
 if ("display" == partname)
 {
+  // This part visualises how the part interacts with the inner_r-sized hole:
+  // In my case, I can extend a bit beyond the radius (as, below a plastic
+  // insert, there's more than inner_r to work with)
+  /*
+  %
+  cylinder(r=inner_r, h=1.5*funnel_max_depth);
+  */
+  // This part helps illustrate that the funnel would go down a inner_r-sized hole:
+  /*
+  %
+  rotate([0,10,0])
+  {
+    cylinder(r=inner_r, h=1.5*funnel_max_depth);
+  }
+  */
   funnel();
 } else if ("funnel" == partname)
 {
