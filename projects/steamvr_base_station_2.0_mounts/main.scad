@@ -1,7 +1,7 @@
 // Use partname to control which object is being rendered:
 //
 // _partname_values wall_mounted_clasp wall_plate mount_for_3m_adhesive_cover shelf_mounted_clasp
-partname = "wall_mounted_clasp";
+partname = "display";
 
 // generic thickness of walls, as used here and there:
 wall_thickness = 2;
