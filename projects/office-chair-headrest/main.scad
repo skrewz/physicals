@@ -86,12 +86,6 @@ module arc_of_circle(ir, or, height, angle_in_either_direction, lean_angle)
     {
       translate([ir,0,0])
       {
-      /*
-        rotate([0,0,lean_angle])
-        {
-          square([or-ir,height]);
-        }
-        */
         polygon([
           [0, 0],
           [or-ir, 0],
