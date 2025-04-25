@@ -55,12 +55,6 @@ module holder()
 
 module holder_pos()
 {
-  translate([holder_width/2-mount_for_3m_adhesive_wdh[0]/2, -0.01, holder_height - mount_for_3m_adhesive_wdh[2] - holder_3m_indentation])
-  {
-    %
-    // TODO: not quite finished:
-    mount_for_3m_adhesive_visualisation();
-  }
   hull()
   {
     for (zoff = [holder_width/2,holder_height-holder_width/2])
