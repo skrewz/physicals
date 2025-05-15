@@ -93,7 +93,7 @@ beam_foot_inner_r = (22.5)/2;
 beam_foot_cutout_angle = 110;
 
 // The wall width of the beam_foot():
-beam_foot_wall_w = 2.5;
+beam_foot_wall_w = 4;
 
 // The width of the beam_foot() attachment:
 beam_foot_attachment_length = 50;
@@ -102,14 +102,14 @@ beam_foot_attachment_length = 50;
 beam_foot_round_knob_r = 23.2/2;
 
 // An offset to allow the knob to snap in:
-beam_foot_round_knob_offset = 0.5*beam_foot_round_knob_r;
+beam_foot_round_knob_offset = 0.7*beam_foot_round_knob_r;
 
 // The angle (compared to the beam_foot()'s extending leg) that the knob exists
 // at:
-beam_foot_round_knob_angle = -10;
+beam_foot_round_knob_angle = -17;
 
 // The radius and length of the beam_foot() to the floor:
-beam_foot_leg_rh = [13,123]; // TODO: measure
+beam_foot_leg_rh = [15,123];
 
 // The rounding of the feet as they hit the floor:
 beam_foot_leg_rounding_r = 2;
@@ -346,9 +346,15 @@ module beam_foot_neg()
   }
   rotate([180+beam_foot_round_knob_angle,0,0])
   {
-    translate([beam_foot_attachment_length-beam_foot_round_knob_offset,0,0])
+    hull()
     {
-      cylinder(r=beam_foot_round_knob_r, h=beam_foot_inner_r+beam_foot_wall_w);
+      for (xoff = [0,beam_foot_round_knob_offset])
+      {
+        translate([beam_foot_attachment_length-xoff,0,0])
+        {
+          cylinder(r=beam_foot_round_knob_r, h=beam_foot_inner_r+beam_foot_wall_w);
+        }
+      }
     }
   }
 }
