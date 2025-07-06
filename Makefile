@@ -5,9 +5,12 @@ mainfile=main.scad
 base=$(shell basename $(shell pwd) )
 
 partnames=$(shell sed -rn 's|^//\s*_partname_values ||;tp;b;:p p' $(mainfile) )
-outputfiles=$(shell echo $(partnames) | tr ' ' '\n' |  sed -r 's|.*|render/$(base)_part_&.stl|g' ) render/display.png $(shell echo $(partnames) | tr ' ' '\n' |  sed -r 's|.*|render/$(base)_part_&.png|g' )
+stlfiles=$(shell echo $(partnames) | tr ' ' '\n' |  sed -r 's|.*|render/$(base)_part_&.stl|g' )
+pngfiles=render/display.png $(shell echo $(partnames) | tr ' ' '\n' |  sed -r 's|.*|render/$(base)_part_&.png|g' )
+outputfiles=$(stlfiles) $(pngfiles)
 
 all: $(outputfiles)
+stls: $(stlfiles)
 clean:
 	@rm -f render/*
 
